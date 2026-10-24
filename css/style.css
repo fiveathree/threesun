@@ -7,9 +7,9 @@ img{max-width:100%}
   --accent:#5E4A7A; --accent-soft:#E9E3F0;
   --wood:#3F7A55; --fire:#B3432F; --earth:#A2762A; --metal:#7D7F86; --water:#2D5578;
   --wood-bg:#E4EFE7; --fire-bg:#F5E3DF; --earth-bg:#F3EAD8; --metal-bg:#EAEBED; --water-bg:#E0E8F0;
-  --display:"LXGW WenKai TC","Noto Serif TC","PingFang TC",serif;
+  --display:"Noto Serif TC","Songti TC","PMingLiU",serif;
   --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --mono:"Noto Sans Mono",ui-monospace,Menlo,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#18161B; --surface:#221F26; --ink:#ECE8EF; --muted:#A39CA8; --line:#3A353F;
@@ -35,9 +35,9 @@ button,input,select{font:inherit;color:inherit}
 .el-土{--c:var(--earth);--cb:var(--earth-bg)} .el-金{--c:var(--metal);--cb:var(--metal-bg)}
 .el-水{--c:var(--water);--cb:var(--water-bg)}
 
-header.top{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:22px 18px;border-bottom:1px solid var(--line)}
-.brand{display:flex;align-items:baseline;gap:12px}
-.brand h1{font-size:28px;letter-spacing:.08em}
+header.top{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px 16px;padding-block:20px 14px;border-bottom:1px solid var(--line)}
+.brand{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;min-width:0}
+.brand h1{font-size:28px;letter-spacing:.08em;line-height:1.2}
 .brand span{color:var(--muted);font-size:13px;letter-spacing:.12em}
 nav.top{display:flex;gap:18px;font-size:14px}
 nav.top a{text-decoration:none;color:var(--muted)} nav.top a:hover{color:var(--ink)}
@@ -132,6 +132,7 @@ footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-si
 .toast{font-size:13px;color:var(--accent)}
 
 @media (max-width:760px){
+
   .tool,.place-body{grid-template-columns:1fr}
   .passport{grid-template-columns:1fr}
   nav.top{display:none}
@@ -141,11 +142,13 @@ footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--line);font-si
   form.birth{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-.hdr-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .lang{display:inline-flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;background:var(--surface)}
 .lang button{border:0;background:transparent;padding:4px 12px;font-size:13px;cursor:pointer;color:var(--muted)}
 .lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
-html[lang="en"] .brand h1{font-size:22px;letter-spacing:.02em}
+html[lang="en"] .brand h1{font-size:24px;letter-spacing:0}
+html[lang="en"] .tool .intro h2{font-size:clamp(26px,3.6vw,34px)}
+.demo-flag{justify-self:end;white-space:nowrap}
+.lang{justify-self:end;align-self:start}
 html[lang="en"] .glyph i{letter-spacing:.02em}
 html[lang="en"] .bar{grid-template-columns:3.6em 1fr 2em}
 html[lang="en"] .bar b{font-size:14px}
@@ -182,13 +185,9 @@ html[lang="en"] .passport dl{grid-template-columns:7.5em 1fr}
 .spread{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .tcard{display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;min-width:0}
 .tcard .pos{font-size:12px;letter-spacing:.14em;color:var(--muted)}
-.face{width:100%;max-width:150px;aspect-ratio:2/3.3;border-radius:10px;border:1px solid var(--accent);background:linear-gradient(160deg,var(--accent-soft),var(--surface));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;position:relative;transition:transform .5s ease}
-.face::before{content:"";position:absolute;inset:6px;border:1px solid var(--accent);border-radius:6px;opacity:.4}
-.face .num{font-family:var(--display);font-size:15px;color:var(--accent);letter-spacing:.12em}
-.face .sym{font-size:38px;line-height:1;color:var(--accent)}
-.face .nm{font-family:var(--display);font-size:17px;line-height:1.25}
+.face{width:100%;max-width:150px;aspect-ratio:360/600;border-radius:8px;overflow:hidden;background:var(--accent-soft);box-shadow:0 2px 10px rgba(0,0,0,.15);transition:transform .5s ease}
+.face img{display:block;width:100%;height:100%;object-fit:cover}
 .face.rev{transform:rotate(180deg)}
-.face.back{background:repeating-linear-gradient(45deg,var(--accent) 0 2px,var(--accent-soft) 2px 10px);border-color:var(--accent)}
 .tcard .ori{font-size:12px;font-weight:700;color:var(--accent)}
 .tcard p{margin:0;font-size:13px;line-height:1.55}
 .tq{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
@@ -211,4 +210,6 @@ html[lang="en"] .passport dl{grid-template-columns:7.5em 1fr}
 .warn{color:var(--fire)} .good{color:var(--wood)}
 
 @media (max-width:760px){.tool{grid-template-columns:1fr}}
-@media (max-width:480px){.spread{gap:6px}.face .sym{font-size:28px}.face .nm{font-size:14px}.tabpane{padding:16px}}
+@media (max-width:480px){.spread{gap:6px}.tabpane{padding:16px}}
+.tcard .tname{font-family:var(--display);font-size:14px;line-height:1.3}
+@media (max-width:760px){.demo-flag{grid-column:1/-1;justify-self:start;white-space:normal}}

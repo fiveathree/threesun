@@ -179,7 +179,8 @@ function paneTarot() {
   const cards = tarotDraw.map((d, pos) => {
     const c = TAROT[d.i];
     return `<div class="tcard"><span class="pos">${t('tPos')[pos]}</span>
-      <div class="face${d.rev ? ' rev' : ''}"><span class="num">${c.n}</span><span class="sym">${c.sym}</span><span class="nm">${lang === 'en' ? c.en : c.zh}</span></div>
+      <div class="face${d.rev ? ' rev' : ''}"><img src="img/tarot/${pad(d.i)}.jpg" alt="${c.n} ${lang === 'en' ? c.en : c.zh}" width="360" height="600" loading="lazy"></div>
+      <b class="tname">${c.n} · ${lang === 'en' ? c.en : c.zh}</b>
       <span class="ori">${d.rev ? t('rev') : t('up')}</span>
       <p>${(d.rev ? c.rv : c.up)[k]}</p></div>`;
   }).join('');
