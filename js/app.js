@@ -95,9 +95,9 @@ const fact = (k, v, cls = '') => `<div class="fact"><small>${k}</small><b class=
 
 /* ---------- state ---------- */
 let profile = null, pickEl = null, fType = 'all', fEl = 'all', tab = 'bazi', tarotDraw = null, curCell = CELLS[4], openId = null;
-let hexLines = null, qian = null, nameIn = { sur: '林', given: '雅琪' }, palmAns = { hand: 2, finger: 2, face: 2 };
+let nameIn = { sur: '林', given: '雅琪' }, palmAns = { hand: 2, finger: 2, face: 2 };
 let alPick = '嫁娶', alY = null, alM = null;
-const GROUPS = { fate: ['bazi','ziwei','life','name'], stars: ['astro','sx'], div: ['tarot','iching','qian'], fs: ['kua','almanac','today'], phys: ['palm'] };
+const GROUPS = { fate: ['bazi','ziwei','life','name'], stars: ['astro','sx'], div: ['tarot','iching','meihua','yarrow','turtle','qian','petal'], fs: ['kua','almanac','today'], phys: ['palm'] };
 const groupOf = k => Object.keys(GROUPS).find(g => GROUPS[g].includes(k));
 
 function readProfile() {
@@ -354,48 +354,6 @@ function paneTarot() {
     <div class="spread">${cards}</div>${recList(tarotDraw.map(d => TAROT[d.i].rec))}`;
 }
 
-/* ---------- 金錢卦 ---------- */
-function tossHex() { hexLines = Array.from({ length: 6 }, () => [0, 0, 0].reduce(a => a + (Math.random() < 0.5 ? 3 : 2), 0)); }
-function hexOf(bits) {
-  const lo = TRIGRAMS.findIndex(g => g.k === bits.slice(0, 3).join('')), up = TRIGRAMS.findIndex(g => g.k === bits.slice(3).join(''));
-  return { n: KW[up][lo], up: TRIGRAMS[up], lo: TRIGRAMS[lo] };
-}
-function paneIching() {
-  if (!hexLines) tossHex();
-  const main = hexLines.map(v => (v === 7 || v === 9) ? 1 : 0);
-  const moving = hexLines.map(v => v === 6 || v === 9);
-  const chg = main.map((b, i) => moving[i] ? 1 - b : b);
-  const H = hexOf(main), H2 = hexOf(chg), nMove = moving.filter(Boolean).length;
-  const hx = h => HEX[h.n];
-  const nameH = h => isEn() ? `${h.n}. ${hx(h)[1]} ${hx(h)[0]}` : `第${h.n}卦　${hx(h)[0]}`;
-  const lineSvg = bits => `<div class="hex">${bits.map((b, i) => `<i class="ln${b ? '' : ' yin'}${moving[i] ? ' mv' : ''}"></i>`).reverse().join('')}</div>`;
-  const tri = g => `${g.sym} ${g.zh}${isEn() ? ' ' + g.nat[1] : '（' + g.nat[0] + '）'}`;
-  return `<div class="row"><button class="btn" type="button" id="icToss">${t('icToss')}</button></div><p class="note">${t('icHint')}</p>` +
-    block(H.up.el, `<div class="hex-pair">
-      <div class="hex-card">${lineSvg(main)}<b>${nameH(H)}</b><small>${t('icUpper')} ${tri(H.up)}・${t('icLower')} ${tri(H.lo)}</small><p>${hx(H)[isEn() ? 3 : 2]}</p></div>
-      ${nMove ? `<div class="hex-card ghost"><span class="pos">${t('icChange')}</span>${lineSvg(chg).replace(/ mv/g, '')}<b>${nameH(H2)}</b><p>${hx(H2)[isEn() ? 3 : 2]}</p></div>` : ''}
-    </div>
-    <p class="note">${nMove ? t('icMoving')(nMove) : t('icNoChange')}</p>`) + recList([...recsOfEl(H.up.el, 2), ...recsOfEl(H.lo.el, 1)]);
-}
-
-/* ---------- 求籤 ---------- */
-function drawQian(confirmed) { qian = { n: Math.floor(Math.random() * QIAN.length), stage: confirmed ? 'ok' : 'drawn', cup: confirmed ? 'sheng' : null }; }
-function paneQian() {
-  if (!qian) drawQian(true);
-  const q = QIAN[qian.n], k = isEn();
-  const btns = `<div class="row"><button class="btn${qian.stage === 'drawn' ? ' ghost' : ''}" type="button" id="qDraw">${t('qDraw')}</button>${qian.stage === 'drawn' ? `<button class="btn" type="button" id="qThrow">${t('qThrow')}</button>` : ''}</div>`;
-  if (qian.stage !== 'ok') {
-    const msg = qian.stage === 'drawn' ? t('qWait') : t('qCup')[qian.cup];
-    return btns + `<div class="qian-stick"><b>${t('qNo')(qian.n + 1)}</b><p>${msg}</p></div>`;
-  }
-  const el = { 上上: '土', 上: '木', 中: '金', 下: '水' }[q[0]];
-  return btns + block(el, `<p class="sub" style="margin:0">${t('qCup').sheng}</p>
-    <div class="qian"><div class="qian-head"><b>${t('qNo')(qian.n + 1)}</b><em>${k ? QIAN_GRADE_EN[q[0]] : q[0]}</em></div>
-      <p class="qian-verse">${q[1].replace('，', '，<br>')}</p>${k ? `<p class="sub" style="margin:0">${q[2]}</p>` : ''}
-      <p style="margin:0"><strong>${t('qAdvice')}${isEn() ? ': ' : '：'}</strong>${k ? q[4] : q[3]}</p></div>
-    <p class="note">${t('qNote')}</p>`) + recList(QIAN_REC[q[0]]);
-}
-
 /* ---------- 八宅本命卦 ---------- */
 function kuaOf(pr, c) {
   const yi = mod(6 * c.p[0][0] - 5 * c.p[0][1], 60);
@@ -497,7 +455,7 @@ function renderPane() {
   const pane = $('pane');
   pane.className = 'tabpane el-' + pickEl;
   pane.setAttribute('aria-labelledby', 'tab-' + tab);
-  const P = { bazi: () => paneBazi(c), ziwei: paneZiwei, life: paneLife, name: paneName, astro: paneAstro, sx: () => paneSx(c), tarot: paneTarot, iching: paneIching, qian: paneQian, kua: () => paneKua(c), almanac: paneAlmanac, today: () => paneToday(c), palm: panePalm };
+  const P = { bazi: () => paneBazi(c), ziwei: paneZiwei, life: paneLife, name: paneName, astro: paneAstro, sx: () => paneSx(c), tarot: paneTarot, kua: () => paneKua(c), almanac: paneAlmanac, today: () => paneToday(c), palm: panePalm, ...ORACLE_PANES };
   try { pane.innerHTML = P[tab](); } catch (err) { pane.innerHTML = `<p class="warn">${esc(err.message)}</p>`; console.error(err); }
   wireOpen(pane);
   const on = (id, fn, ev = 'onclick') => { const el = $(id); if (el) el[ev] = fn; };
@@ -505,12 +463,10 @@ function renderPane() {
   on('seePlace', () => { showCell(CELLS.find(x => x.el === pickEl)); $('place').scrollIntoView({ behavior: 'smooth' }); });
   on('tqForm', e => { e.preventDefault(); const q = $('tq').value; drawTarot(); renderPane(); $('tq').value = q; }, 'onsubmit');
   on('nmForm', e => { e.preventDefault(); nameIn = { sur: $('nmSur').value, given: $('nmGiven').value }; renderPane(); }, 'onsubmit');
-  on('icToss', () => { tossHex(); renderPane(); });
-  on('qDraw', () => { drawQian(false); renderPane(); });
-  on('qThrow', () => { const r = Math.random(); qian.cup = r < 0.5 ? 'sheng' : r < 0.75 ? 'xiao' : 'yin'; qian.stage = qian.cup === 'sheng' ? 'ok' : 'retry'; renderPane(); });
   on('alPick', e => { alPick = e.target.value; renderPane(); }, 'onchange');
   on('alPrev', () => { alM--; if (alM < 1) { alM = 12; alY--; } renderPane(); });
   on('alNext', () => { alM++; if (alM > 12) { alM = 1; alY++; } renderPane(); });
+  if (ORACLE_WIRE[tab]) ORACLE_WIRE[tab](pane);
   pane.querySelectorAll('[data-pm]').forEach(s => s.onchange = () => { palmAns[s.dataset.pm] = +s.value; renderPane(); });
 }
 
@@ -600,7 +556,7 @@ document.querySelectorAll('[data-lang]').forEach(b => b.onclick = () => {
 });
 applyStatic();
 profile = readProfile();
-drawTarot(); tossHex(); drawQian(true);
+drawTarot(); oracleInit();
 renderPane();
 curCell = CELLS.find(c => c.el === pickEl) || CELLS[4];
 renderGrid(); showCell(curCell);

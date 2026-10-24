@@ -329,3 +329,71 @@ form.birth input[type="time"]:disabled{opacity:.45}
 .palm-form select{min-width:0;width:100%}
 
 @media (max-width:480px){.yj{grid-template-columns:1fr}.nm-row{grid-template-columns:minmax(0,1fr) 2.5em 3em 3.5em}}
+
+/* ---- v4: animated oracles ---- */
+.mono{font-family:var(--mono);font-size:12px}
+@keyframes popIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.pop{animation:popIn .3s ease both}
+.reveal .hex-card{animation:popIn .45s ease both}
+.reveal .hex-card:nth-child(2){animation-delay:.12s}.reveal .hex-card:nth-child(3){animation-delay:.24s}
+.hex-pair.three .hex-card{flex-basis:150px}
+.vwrap{min-height:20px}
+.vlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;max-width:280px}
+.vlist li{display:grid;grid-template-columns:1.4em 76px 1fr;align-items:center;gap:10px;font-size:13px}
+.vlist li span{font-family:var(--mono);color:var(--muted)}
+.vlist .hex{width:76px;margin:0;gap:0}
+.vlist em{font-style:normal;color:var(--muted)}
+
+/* coins */
+.coin-stage{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;min-height:96px;padding-top:36px}
+.coins{display:flex;gap:12px;perspective:400px}
+.coin{width:48px;height:48px;border-radius:50%;position:relative;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#F6DE97,#C49433 62%,#8A6420);border:2px solid #74531A;box-shadow:0 2px 4px rgba(0,0,0,.25)}
+.coin::before{content:"";width:12px;height:12px;background:var(--surface);border:2px solid #74531A;border-radius:1px}
+.coin span{position:absolute;top:2px;left:0;right:0;text-align:center;font-family:var(--display);font-size:11px;font-weight:700;color:#4A3208}
+.coin.tail{background:radial-gradient(circle at 35% 30%,#E2C47E,#A27A2A 62%,#6E4E14)}
+.coin.tail span{color:#F5E4B4}
+@keyframes coinSpin{0%{transform:translateY(0) rotateX(0)}45%{transform:translateY(-38px) rotateX(900deg)}100%{transform:translateY(0) rotateX(1800deg)}}
+.coin.spin{animation:coinSpin .72s ease-in-out both}
+.coin.spin span{opacity:0}
+
+/* yarrow */
+.ya-stage{display:flex;flex-direction:column;gap:8px;align-items:flex-start;background:var(--bg);border-radius:8px;padding:12px}
+.piles{display:flex;gap:28px;align-items:flex-end;flex-wrap:wrap}
+.pile{display:flex;flex-direction:column;gap:4px}
+.stalks{display:flex;gap:2px;align-items:flex-end;flex-wrap:wrap;max-width:200px;min-height:46px}
+.stalks i{width:2px;height:44px;background:var(--earth);border-radius:1px;animation:popIn .2s ease both}
+.pile small{font-family:var(--mono);color:var(--muted)}
+
+/* tortoise shell */
+.shell-wrap canvas{width:100%;max-width:360px;height:auto;display:block;margin:0 auto}
+
+/* fortune sticks */
+.qian-stage{display:flex;align-items:flex-end;gap:28px;flex-wrap:wrap;padding-top:8px}
+.tube{position:relative;width:104px}
+.tube svg{width:100%;height:auto;display:block;transform-origin:50% 92%}
+.tube .out{transition:transform .6s cubic-bezier(.3,1.4,.5,1);transform-box:fill-box}
+.tube.pop .out{transform:translateY(-38px)}
+@keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-9deg) translateX(-3px)}75%{transform:rotate(9deg) translateX(3px)}}
+.tube.shake svg{animation:shake .16s linear 8}
+.stick-no{position:absolute;top:-4px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0 8px;font-family:var(--mono);font-weight:500;animation:popIn .3s ease both}
+.jiaos{display:flex;gap:18px;align-items:flex-end;min-height:44px}
+.jiao{width:58px;height:30px;box-sizing:border-box}
+.jiao.round{border-radius:30px 30px 6px 6px;background:linear-gradient(160deg,#D2654A,#8E2A1C);box-shadow:inset -4px -3px 0 rgba(0,0,0,.15)}
+.jiao.flat{border-radius:6px 6px 30px 30px;background:#E9947A;border:2px solid #8E2A1C}
+@keyframes toss{0%{transform:translateY(0) rotate(0)}50%{transform:translateY(-74px) rotate(400deg)}100%{transform:translateY(0) rotate(720deg)}}
+.jiao.toss{animation:toss .9s cubic-bezier(.3,.6,.4,1) both}
+
+/* petals */
+.petal-stage{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.flower-wrap{width:220px;max-width:100%}
+.flower{width:100%;height:auto;display:block;overflow:visible}
+.petal{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5;cursor:pointer;transform-box:fill-box;transform-origin:50% 100%;transition:fill .15s}
+.petal:hover,.petal:focus-visible{fill:var(--fire-bg);outline:none}
+@keyframes fall{to{transform:translate(26px,170px) rotate(140deg);opacity:0}}
+.petal.fall{animation:fall .65s ease-in both}
+.disc{fill:var(--earth)}
+.petal-word{display:flex;flex-direction:column;gap:4px}
+.petal-word b{font-family:var(--display);font-size:26px}
+.petal-word small{color:var(--muted)}
+
+@media (prefers-reduced-motion:reduce){.coin.spin,.tube.shake svg,.jiao.toss,.petal.fall,.pop,.reveal .hex-card,.stalks i{animation-duration:.01s!important;animation-iteration-count:1!important}}
