@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>五行石室</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="水晶手鏈同擺件網店，附八字五行、星座、生肖太歲、塔羅同今日運勢，每個結果配返適合嘅水晶。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><h1 data-t="brand"></h1><span data-t="brandSub"></span></div>
+    <nav class="top"><a href="#bazi" data-t="navBazi"></a><a href="#shop" data-t="navShop"></a><a href="#place" data-t="navPlace"></a></nav>
+    <div class="hdr-right">
+      <span class="demo-flag" data-t="demo"></span>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" data-lang="zh" aria-pressed="true">中文</button>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="tool" id="bazi">
+    <div class="intro">
+      <h2 data-t="heroTitle"></h2>
+      <p data-t="heroText"></p>
+      <form class="birth" id="birthForm">
+        <label class="full" for="bdate"><span data-t="fDate"></span><input type="date" id="bdate" value="1986-03-15" min="1920-01-01" max="2026-12-31" required></label>
+        <label for="bhour"><span data-t="fHour"></span><select id="bhour"></select></label>
+        <label for="bname"><span data-t="fName"></span><input type="text" id="bname"></label>
+        <div class="full"><button class="btn" type="submit" data-t="fGo"></button></div>
+      </form>
+      <p class="fine" data-t="heroFine"></p>
+    </div>
+    <div class="panel">
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div class="tabpane" role="tabpanel" id="pane" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="shop" id="shop">
+    <div class="sec-head"><div><h2 data-t="shopTitle"></h2><p data-t="shopText"></p></div></div>
+    <div class="filters" role="group" id="typeFilters"></div>
+    <div class="filters" role="group" id="elFilters"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="place" id="place">
+    <div class="sec-head"><div><h2 data-t="placeTitle"></h2><p data-t="placeText"></p></div></div>
+    <div class="place-body">
+      <div>
+        <div class="fsrow"><span class="star-badge" style="--c:var(--accent);--cb:var(--accent-soft)" data-t="fsTitle"></span></div>
+        <div class="luoshu" id="luoshu"></div>
+        <p class="compass-note"><span data-t="compass"></span> <span data-t="fsNote"></span></p>
+      </div>
+      <div class="place-info el-土" id="placeInfo"></div>
+    </div>
+  </section>
+
+  <footer>
+    <span data-t="foot1"></span>
+    <span data-t="foot2"></span>
+  </footer>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="passport" role="dialog" aria-modal="true" aria-labelledby="ppName" id="passport"></div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
