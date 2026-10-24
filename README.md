@@ -21,6 +21,8 @@
 - `js/app.js`：計算同畫面邏輯
 - `js/vendor/`：第三方庫
 - `img/tarot/`：22 張大阿爾克那牌圖
+- `tests/smoke.js`：測試，喺 repo 根目錄行 `node tests/smoke.js`
+- `CLAUDE.md`：交接筆記（Claude Code 會自動讀）
 
 純靜態網站，可以直接放上 Cloudflare Pages 或 GitHub Pages。
 
