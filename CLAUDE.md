@@ -31,7 +31,7 @@ js/data.js            貨品 PRODUCTS、介面文字 T、五行 EL_INFO、星座
 js/data2.js           T2 文字、出生地 PLACES、紫微、生命靈數、姓名學、八宅 KUA、
                       易經 TRIGRAMS/KW/HEX、籤詩 QIAN、手相面相、農民曆簡轉繁同英譯
 js/oracles.js         有動畫嘅占卜：金錢卦、梅花易數、蓍草占、龜甲占、求籤、數花瓣
-js/app.js             主程式：計算、各分頁 pane、商店、貨品頁、九宮擺位、啟動
+js/app.js             主程式：計算、各分頁 pane（包括玄空飛星九宮）、商店、貨品頁、啟動
 img/tarot/00–21.jpg   22 張大阿爾克那（1909 Rider 原版掃描，公有領域）
 favicon.svg / favicon-32.png / apple-touch-icon.png
 tests/smoke.js        無頭測試
@@ -49,7 +49,7 @@ tests/smoke.js        無頭測試
   - 命理 `bazi ziwei life name`
   - 星象 `astro sx`
   - 占卜 `tarot iching meihua yarrow turtle qian petal`
-  - 風水 `kua almanac today`
+  - 風水 `kua xuankong almanac today`
   - 相學 `palm`
 - **加新分頁**：寫 `paneXxx()` 回傳 HTML string → 加入 `renderPane()` 嘅 `P` map（或者 `oracles.js` 嘅 `ORACLE_PANES`）→ 要綁事件就加 `ORACLE_WIRE[key] = pane => {...}` → `T.zh.tabs` / `T.en.tabs` 加名 → 加入 `GROUPS`。
 - 每次 render 都係成個 pane `innerHTML` 重寫，事件喺 `renderPane()` 尾重新綁。動畫做法：喺現有 DOM 做完動畫，再更新 state 同 `renderPane()` 出靜態結果。
@@ -66,7 +66,8 @@ tests/smoke.js        無頭測試
 - **姓名學**：康熙筆劃五格（天人地外總）、81 數理吉凶表、三才。數字字（一至十）按數值計。
 - **八宅本命卦**：按立春年同性別；公式喺 `kuaOf()`，已用 1986 男 = 坤 2、女 = 坎 1、2000 男 = 離 9、女 = 乾 6 核對。九宮擺位亦顯示本命卦吉凶。
 - **農民曆**：lunar-javascript 嘅宜忌（簡體）經 `toTrad()` 轉繁體；英文翻譯喺 `YIJI_EN`，冇翻譯就顯示中文。
-- **2026 流年飛星**：一白入中，五黃在南、二黑在西北（`CELLS[].fs`）。**每年立春要更新**，同 `TAISUI_2026`、`sxYear` 文字一齊改。
+- **玄空飛星**（風水分頁 `xuankong`，`paneXuankong()`）：九宮格（南方喺上）。每格顯示方位五行（後天八卦）、2026 流年飛星同化解建議、用家八宅本命卦嘅吉凶。撳格用 `showCell()` 原地更新；`renderLuoshu()` / `showCell()` 喺分頁唔喺畫面時會直接 return。八字分頁嘅「睇擺位」掣同頂部導覽「玄空飛星」都用 `openXuankong(cell)` 打開。
+- **2026 流年飛星**：一白入中，五黃在南、二黑在西北（`CELLS[].fs`，飛星內容喺 `STARS`）。**每年立春要更新**，同 `TAISUI_2026`、`sxYear`、`fsTitle`、`fsNote` 文字一齊改。
 - **蓍草占**：完整大衍之數 49 根、十八變。3000 次模擬嘅比例接近傳統 1:5:7:3。
 - **梅花易數**：農曆年支 + 月 + 日 → 上卦；再加時支 → 下卦；總數除 6 → 動爻。有本卦、互卦、變卦同體用生剋。
 
@@ -87,7 +88,6 @@ node tests/smoke.js
 
 ## 未做 / 下一步
 
-- **擁有人問過**：底部「擺件擺邊個方位」九宮格屬玄空飛星派（方位五行屬後天八卦）。建議搬入「風水」分頁，改名「玄空飛星」，同八宅並列。**佢未答覆要唔要搬**，問清楚先做。
 - 動畫（銅錢、籤筒、筊杯、蓍草、龜甲、花瓣）未喺真瀏覽器同手機測過。
 - 每件貨嘅專屬網址（例如 `#CR-B01`）同 QR 卡，未做。
 - 後台畀擁有人自己加貨、上載相片，未做。

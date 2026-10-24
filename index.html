@@ -21,7 +21,7 @@
       <button type="button" data-lang="zh" aria-pressed="true">中文</button>
       <button type="button" data-lang="en" aria-pressed="false">EN</button>
     </div>
-    <nav class="top"><a href="#bazi" data-t="navBazi"></a><a href="#shop" data-t="navShop"></a><a href="#place" data-t="navPlace"></a></nav>
+    <nav class="top"><a href="#bazi" data-t="navBazi"></a><a href="#shop" data-t="navShop"></a><a href="#bazi" id="navPlace" data-t="navPlace"></a></nav>
     <span class="demo-flag" data-t="demo"></span>
   </header>
 
@@ -52,18 +52,6 @@
     <div class="filters" role="group" id="typeFilters"></div>
     <div class="filters" role="group" id="elFilters"></div>
     <div class="grid" id="grid"></div>
-  </section>
-
-  <section class="place" id="place">
-    <div class="sec-head"><div><h2 data-t="placeTitle"></h2><p data-t="placeText"></p></div></div>
-    <div class="place-body">
-      <div>
-        <div class="fsrow"><span class="star-badge" style="--c:var(--accent);--cb:var(--accent-soft)" data-t="fsTitle"></span></div>
-        <div class="luoshu" id="luoshu"></div>
-        <p class="compass-note"><span data-t="compass"></span> <span data-t="fsNote"></span></p>
-      </div>
-      <div class="place-info el-土" id="placeInfo"></div>
-    </div>
   </section>
 
   <footer>

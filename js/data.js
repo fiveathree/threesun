@@ -13,7 +13,7 @@ const CTRL = {木:'土',土:'水',水:'火',火:'金',金:'木'};  // 剋
 
 const T = {
  zh:{
-  brand:'五行石室',brandSub:'水晶・命理・占卜',navBazi:'占卜神算',navShop:'選購',navPlace:'擺位',demo:'示範網站・貨品及價錢為例子',
+  brand:'五行石室',brandSub:'水晶・命理・占卜',navBazi:'占卜神算',navShop:'選購',navPlace:'玄空飛星',demo:'示範網站・貨品及價錢為例子',
   heroTitle:'八字、星座、塔羅，<br>算完揀返你嘅石',
   heroText:'輸入一次出生資料，右邊五個工具都會用到。每個結果最後都會配返適合你嘅水晶。',
   fDate:'出生日期（西曆）',fHour:'出生時間',fName:'稱呼（可留空）',fNamePh:'例如：小美',fGo:'開始推算',hourUnknown:'唔知道',
@@ -21,7 +21,7 @@ const T = {
   tabs:{bazi:'八字五行',zodiac:'星座',sx:'生肖太歲',tarot:'塔羅',today:'今日運勢'},
   shopTitle:'選購',shopText:'每件貨附 QR 卡，掃描即開返呢件貨嘅身分頁：五行、擺位、保養同批次。',
   all:'全部',bracelet:'手鏈',ornament:'擺件',elAll:'五行不限',
-  placeTitle:'擺件擺邊個方位',placeText:'撳九宮格任何一格，睇嗰個方位屬咩五行，同 2026 年流年飛星落喺邊。',
+  placeTitle:'擺件擺邊個方位',placeText:'玄空飛星派：撳九宮格任何一格，睇嗰個方位屬咩五行（後天八卦）、2026 年飛星落喺邊，同埋係咪你本命卦嘅吉方。',
   compass:'依傳統羅盤畫法，南方喺上。用手機指南針企喺屋中間對方位。',
   foot1:'水晶、八字、星座、生肖同塔羅內容屬傳統文化同娛樂參考，唔係醫療、投資或財運保證。',
   foot2:'示範網站：貨品、價錢、批次資料均為例子，正式上線前需換成實際貨源資料。',
@@ -62,7 +62,7 @@ const T = {
   elName:e=>e, sep:'、'
  },
  en:{
-  brand:'Five Elements Stone Room',brandSub:'Crystals · Bazi · Divination',navBazi:'Readings',navShop:'Shop',navPlace:'Placement',demo:'Demo site · sample products and prices',
+  brand:'Five Elements Stone Room',brandSub:'Crystals · Bazi · Divination',navBazi:'Readings',navShop:'Shop',navPlace:'Flying stars',demo:'Demo site · sample products and prices',
   heroTitle:'Bazi, zodiac, tarot,<br>then the stone for you',
   heroText:'Enter your birth details once and all five readings on the right use them. Each reading ends with the crystals that suit it.',
   fDate:'Date of birth',fHour:'Time of birth',fName:'Name (optional)',fNamePh:'e.g. Mei',fGo:'Read',hourUnknown:'Not sure',
@@ -70,7 +70,7 @@ const T = {
   tabs:{bazi:'Bazi',zodiac:'Star sign',sx:'Chinese zodiac',tarot:'Tarot',today:'Today'},
   shopTitle:'Shop',shopText:'Every piece comes with a QR card. Scan it to open that piece’s own page: element, placement, care and batch.',
   all:'All',bracelet:'Bracelets',ornament:'Ornaments',elAll:'Any element',
-  placeTitle:'Where to place an ornament',placeText:'Tap any square to see its element and where the 2026 flying stars fall.',
+  placeTitle:'Where to place an ornament',placeText:'Xuan Kong flying stars: tap any square to see its element, where the 2026 stars fall, and whether it is a good direction for your Kua.',
   compass:'Drawn the traditional way, with south at the top. Stand at the centre of your home and use your phone’s compass.',
   foot1:'Crystal, Bazi, zodiac and tarot content is cultural tradition and entertainment. It is not medical, investment or financial advice.',
   foot2:'Demo site: products, prices and batch details are examples, to be replaced with real stock before launch.',

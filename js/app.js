@@ -97,7 +97,7 @@ const fact = (k, v, cls = '') => `<div class="fact"><small>${k}</small><b class=
 let profile = null, pickEl = null, fType = 'all', fEl = 'all', tab = 'bazi', tarotDraw = null, curCell = CELLS[4], openId = null;
 let nameIn = { sur: '林', given: '雅琪' }, palmAns = { hand: 2, finger: 2, face: 2 };
 let alPick = '嫁娶', alY = null, alM = null;
-const GROUPS = { fate: ['bazi','ziwei','life','name'], stars: ['astro','sx'], div: ['tarot','iching','meihua','yarrow','turtle','qian','petal'], fs: ['kua','almanac','today'], phys: ['palm'] };
+const GROUPS = { fate: ['bazi','ziwei','life','name'], stars: ['astro','sx'], div: ['tarot','iching','meihua','yarrow','turtle','qian','petal'], fs: ['kua','xuankong','almanac','today'], phys: ['palm'] };
 const groupOf = k => Object.keys(GROUPS).find(g => GROUPS[g].includes(k));
 
 function readProfile() {
@@ -455,18 +455,19 @@ function renderPane() {
   const pane = $('pane');
   pane.className = 'tabpane el-' + pickEl;
   pane.setAttribute('aria-labelledby', 'tab-' + tab);
-  const P = { bazi: () => paneBazi(c), ziwei: paneZiwei, life: paneLife, name: paneName, astro: paneAstro, sx: () => paneSx(c), tarot: paneTarot, kua: () => paneKua(c), almanac: paneAlmanac, today: () => paneToday(c), palm: panePalm, ...ORACLE_PANES };
+  const P = { bazi: () => paneBazi(c), ziwei: paneZiwei, life: paneLife, name: paneName, astro: paneAstro, sx: () => paneSx(c), tarot: paneTarot, kua: () => paneKua(c), almanac: paneAlmanac, today: () => paneToday(c), palm: panePalm, xuankong: paneXuankong, ...ORACLE_PANES };
   try { pane.innerHTML = P[tab](); } catch (err) { pane.innerHTML = `<p class="warn">${esc(err.message)}</p>`; console.error(err); }
   wireOpen(pane);
   const on = (id, fn, ev = 'onclick') => { const el = $(id); if (el) el[ev] = fn; };
   on('seePicks', () => { setEl(pickEl); $('shop').scrollIntoView({ behavior: 'smooth' }); });
-  on('seePlace', () => { showCell(CELLS.find(x => x.el === pickEl)); $('place').scrollIntoView({ behavior: 'smooth' }); });
+  on('seePlace', () => openXuankong(CELLS.find(x => x.el === pickEl)));
   on('tqForm', e => { e.preventDefault(); const q = $('tq').value; drawTarot(); renderPane(); $('tq').value = q; }, 'onsubmit');
   on('nmForm', e => { e.preventDefault(); nameIn = { sur: $('nmSur').value, given: $('nmGiven').value }; renderPane(); }, 'onsubmit');
   on('alPick', e => { alPick = e.target.value; renderPane(); }, 'onchange');
   on('alPrev', () => { alM--; if (alM < 1) { alM = 12; alY--; } renderPane(); });
   on('alNext', () => { alM++; if (alM > 12) { alM = 1; alY++; } renderPane(); });
   if (ORACLE_WIRE[tab]) ORACLE_WIRE[tab](pane);
+  if (tab === 'xuankong') showCell(curCell);
   pane.querySelectorAll('[data-pm]').forEach(s => s.onchange = () => { palmAns[s.dataset.pm] = +s.value; renderPane(); });
 }
 
@@ -521,12 +522,30 @@ overlay.addEventListener('click', e => { if (e.target === overlay) closePassport
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !overlay.hidden) closePassport(); });
 
 /* ---------- 九宮 + flying stars + kua ---------- */
+function paneXuankong() {
+  return `<p class="lead" style="font-size:20px">${t('placeTitle')}</p><p class="sub" style="margin:0">${t('placeText')}</p>
+    <div class="place-body">
+      <div>
+        <div class="fsrow"><span class="star-badge" style="--c:var(--accent);--cb:var(--accent-soft)">${t('fsTitle')}</span></div>
+        <div class="luoshu" id="luoshu"></div>
+        <p class="compass-note">${t('compass')} ${t('fsNote')}</p>
+      </div>
+      <div class="place-info el-土" id="placeInfo"></div>
+    </div>`;
+}
+function openXuankong(cell) {
+  if (cell) curCell = cell;
+  tab = 'xuankong'; renderTabs(); renderPane();
+  $('bazi').scrollIntoView({ behavior: 'smooth' });
+}
 function renderLuoshu() {
+  if (!$('luoshu')) return;
   $('luoshu').innerHTML = CELLS.map((c, i) => `<button class="cell el-${c.el}${c.el === pickEl ? ' hint' : ''}" data-i="${i}" aria-pressed="${c === curCell}"><b>${c[lang].dir}</b><small>${t('cellLabel')(c.el)}</small><span class="fs">${isEn() ? STARS[c.fs].en : STARS[c.fs].zh}</span></button>`).join('');
   document.querySelectorAll('.cell').forEach(b => b.onclick = () => showCell(CELLS[+b.dataset.i]));
 }
 function showCell(c) {
   curCell = c;
+  if (!$('placeInfo')) return;
   const inf = info(c.el), pd = t('pdl'), s = STARS[c.fs];
   const el = $('placeInfo'); el.className = 'place-info el-' + c.el;
   const items = PRODUCTS.filter(p => p.type === '擺件' && p.el === c.el);
@@ -547,7 +566,7 @@ function showCell(c) {
 }
 
 /* ---------- boot ---------- */
-function refresh() { profile = readProfile() || profile; renderPane(); renderGrid(); showCell(curCell); }
+function refresh() { profile = readProfile() || profile; renderPane(); renderGrid(); }
 $('birthForm').addEventListener('submit', e => { e.preventDefault(); refresh(); });
 $('bnotime').addEventListener('change', () => { $('btime').disabled = $('bnotime').checked; });
 document.querySelectorAll('[data-lang]').forEach(b => b.onclick = () => {
@@ -559,4 +578,5 @@ profile = readProfile();
 drawTarot(); oracleInit();
 renderPane();
 curCell = CELLS.find(c => c.el === pickEl) || CELLS[4];
-renderGrid(); showCell(curCell);
+renderGrid();
+$('navPlace').addEventListener('click', e => { e.preventDefault(); openXuankong(); });

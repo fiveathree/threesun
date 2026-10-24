@@ -7,7 +7,7 @@ const T2 = {
   heroFine:'已填入示範資料。八字同節氣按天文曆法計算。所有結果屬傳統文化同娛樂參考，唔代表任何保證。',
   fTime:'出生時間',fNoTime:'唔知道出生時間',fGender:'性別',female:'女',male:'男',fPlace:'出生地',
   groups:{fate:'命理',stars:'星象',div:'占卜',fs:'風水',phys:'相學'},
-  tabs:{bazi:'八字五行',ziwei:'紫微斗數',life:'生命靈數',name:'姓名學',astro:'星盤',sx:'生肖太歲',tarot:'塔羅',iching:'金錢卦',qian:'求籤',kua:'八宅本命卦',almanac:'農民曆',today:'今日運勢',palm:'手相面相'},
+  tabs:{bazi:'八字五行',ziwei:'紫微斗數',life:'生命靈數',name:'姓名學',astro:'星盤',sx:'生肖太歲',tarot:'塔羅',iching:'金錢卦',qian:'求籤',kua:'八宅本命卦',xuankong:'玄空飛星',almanac:'農民曆',today:'今日運勢',palm:'手相面相'},
   needTime:'呢個推算需要出生時間。喺左邊填返時間，再撳「開始推算」。',
   /* ziwei */
   zwLead:(n,s)=>`${n?n+'嘅':''}命宮主星：<span class="big">${s}</span>`,
@@ -62,7 +62,7 @@ const T2 = {
   heroFine:'Sample details are filled in. Bazi and solar terms are worked out astronomically. All readings are cultural tradition and entertainment, not a promise of any outcome.',
   fTime:'Time of birth',fNoTime:'I don’t know my birth time',fGender:'Gender',female:'Female',male:'Male',fPlace:'Place of birth',
   groups:{fate:'Destiny',stars:'Stars',div:'Oracles',fs:'Feng shui',phys:'Hands & face'},
-  tabs:{bazi:'Bazi',ziwei:'Zi Wei Dou Shu',life:'Life path',name:'Name numbers',astro:'Birth chart',sx:'Chinese zodiac',tarot:'Tarot',iching:'I Ching',qian:'Fortune sticks',kua:'Kua number',almanac:'Almanac',today:'Today',palm:'Palm & face'},
+  tabs:{bazi:'Bazi',ziwei:'Zi Wei Dou Shu',life:'Life path',name:'Name numbers',astro:'Birth chart',sx:'Chinese zodiac',tarot:'Tarot',iching:'I Ching',qian:'Fortune sticks',kua:'Kua number',xuankong:'Flying stars',almanac:'Almanac',today:'Today',palm:'Palm & face'},
   needTime:'This reading needs your birth time. Add it on the left, then press Read.',
   zwLead:(n,s)=>`${n?n+'’s':'Your'} Life Palace star<span class="big">${s}</span>`,
   zwEmpty:'The Life Palace has no main star, so the opposite (Travel) palace is borrowed.',
