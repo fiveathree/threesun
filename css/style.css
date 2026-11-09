@@ -207,7 +207,7 @@ html[lang="en"] .passport dl{grid-template-columns:7.5em 1fr}
 .fsrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
 .fsrow .chip{font-size:13px}
 .star-badge{display:inline-block;font-family:var(--display);font-size:15px;padding:1px 10px;border-radius:4px;background:var(--cb);color:var(--c);margin-right:6px}
-.warn{color:var(--fire)} .good{color:var(--wood)}
+.warn,.bad{color:var(--fire)} .good{color:var(--wood)}
 
 @media (max-width:760px){.tool{grid-template-columns:1fr}}
 @media (max-width:480px){.spread{gap:6px}.tabpane{padding:16px}}
@@ -416,3 +416,18 @@ form.birth input[type="time"]:disabled{opacity:.45}
 .bd-cell.hint{box-shadow:inset 0 0 0 2px var(--c)}
 .bd-cell[aria-pressed="true"]{border-color:var(--c);font-weight:700}
 @media (max-width:520px){.bd-sign small{display:none}.bd-cell{font-size:11px;padding:5px 2px}}
+
+/* 誕生石、小六壬、盧恩 */
+.st-chip{display:inline-flex;align-items:center;gap:6px}
+.st-chip i,.swatch{display:inline-block;width:12px;height:12px;border-radius:50%;border:1px solid var(--line);vertical-align:-1px;margin-right:4px}
+.lead .info-wrap{margin-left:8px;vertical-align:middle}
+.fact small .info-wrap{margin-left:4px;letter-spacing:0}
+.xl-ring{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;max-width:420px}
+.xl-pos{background:var(--cb);color:var(--c);border:2px solid transparent;border-radius:8px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;gap:2px;min-height:58px;justify-content:center}
+.xl-pos b{font-family:var(--display);font-size:16px}
+.xl-pos small{font-size:12px;min-height:1.2em}
+.xl-pos.on{border-color:var(--c)}
+.rune{width:64px;height:96px;background:var(--cb);border-radius:10px;padding:10px;box-sizing:border-box;transition:transform .4s}
+.rune path{fill:none;stroke:var(--c);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.rune.rev{transform:rotate(180deg)}
+p>.info-wrap{margin-left:8px;vertical-align:middle}

@@ -97,7 +97,7 @@ const fact = (k, v, cls = '') => `<div class="fact"><small>${k}</small><b class=
 let profile = null, pickEl = null, fType = 'all', fEl = 'all', tab = 'bazi', tarotDraw = null, curCell = CELLS[4], openId = null;
 let nameIn = { sur: '林', given: '雅琪' }, palmAns = { hand: 2, finger: 2, face: 2 };
 let alPick = '嫁娶', alY = null, alM = null;
-const GROUPS = { fate: ['bazi','ziwei','life','name'], stars: ['astro','sx','blood'], div: ['tarot','iching','meihua','yarrow','turtle','qian','petal'], fs: ['kua','xuankong','almanac','today'], phys: ['palm'] };
+const GROUPS = { fate: ['bazi','ziwei','life','name','nine','stone'], stars: ['astro','sx','xiu','maya'], persona: ['blood','match'], div: ['tarot','rune','iching','meihua','yarrow','turtle','qian','petal'], shu: ['xlr'], fs: ['kua','xuankong','almanac','today'], phys: ['palm'] };
 const groupOf = k => Object.keys(GROUPS).find(g => GROUPS[g].includes(k));
 
 function readProfile() {
@@ -308,7 +308,7 @@ function paneAstro() {
   const el = {火:'火',土:'土',風:'金',水:'水'}[sun.el];
   return block(el, `<p class="lead">${t('zLead')(profile.name, nameOf(sun))}</p>
     ${moonZ ? `<p class="sub" style="margin:0">${t('astLead')(profile.name, isEn() ? sun.en : sun.zh, isEn() ? moonZ.en : moonZ.zh, ascZ ? (isEn() ? ascZ.en : ascZ.zh) : '')}</p>` : ''}
-    <div class="facts">${fact(t('zFacts').range, sun.range[i])}${fact(t('zFacts').el, isEn() ? sun.elEn : ZODIAC_EL_ZH[sun.el])}${fact(t('zFacts').ruler, sun.kw[i])}</div>
+    <div class="facts">${fact(t('zFacts').range, sun.range[i])}${fact(t('zFacts').el, isEn() ? sun.elEn : ZODIAC_EL_ZH[sun.el])}${fact(t('zFacts').ruler, sun.kw[i])}${ophFact()}</div>
     ${rows ? `<div class="ast-table">${rows}</div>` : ''}
     ${!hasTime ? `<p class="note">${t('astNoAsc')}</p>` : ''}
     <p class="note">${t('astNote')}</p>`) + recList([...sun.rec, ...(moonZ ? [moonZ.rec[0]] : []), ...(ascZ ? [ascZ.rec[0]] : [])]);
@@ -467,6 +467,7 @@ function renderPane() {
   on('alPrev', () => { alM--; if (alM < 1) { alM = 12; alY--; } renderPane(); });
   on('alNext', () => { alM++; if (alM > 12) { alM = 1; alY++; } renderPane(); });
   if (ORACLE_WIRE[tab]) ORACLE_WIRE[tab](pane);
+  wireTips(pane);
   if (tab === 'xuankong') showCell(curCell);
   pane.querySelectorAll('[data-pm]').forEach(s => s.onchange = () => { palmAns[s.dataset.pm] = +s.value; renderPane(); });
 }

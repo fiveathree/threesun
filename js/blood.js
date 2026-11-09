@@ -110,7 +110,7 @@ function paneBlood() {
   const grid = `<div class="bd-grid" role="group" aria-label="${t('bdAll')}"><span></span>${BLOOD_TYPES.map(x => `<b>${x}</b>`).join('')}` +
     BD_ROWS.map(r => `<span class="bd-sign">${ZODIAC[r].sym}<small>${isEn() ? ZODIAC[r].en : ZODIAC[r].zh}</small></span>` +
       BLOOD_TYPES.map((x, j) => `<button type="button" class="bd-cell el-${bdEl(ZODIAC[r])}${r === mine && j === mb ? ' hint' : ''}" data-bdz="${r}" data-bdb="${j}" aria-pressed="${r === zi && j === bi}">${BLOOD48[r][j][k]}</button>`).join('')).join('') + '</div>';
-  return `<div class="bd-pick"><span class="bd-label">${t('bdPick')}<span class="info-wrap"><button type="button" class="info" aria-label="${t('bdInfoLabel')}" aria-expanded="false">i</button><span class="info-pop" role="tooltip" hidden>${t('bdInfo')}</span></span></span><div class="filters">${pick}</div></div>` +
+  return `<div class="bd-pick"><span class="bd-label">${t('bdPick')}${infoTip(t('bdInfoLabel'), t('bdInfo'))}</span><div class="filters">${pick}</div></div>` +
     block(bdEl(z), `<p class="lead">${isMine ? t('bdLead')(profile.name, sname, b, d[k]) : t('bdOther')(sname, b, d[k])}</p>
     <p style="margin:0">${d[k + 1]}</p>
     <div class="facts">${fact(t('bdFacts').sign, z.kw[isEn() ? 1 : 0])}${fact(t('bdFacts').blood, BLOOD_INFO[b][lang])}${fact(t('bdFacts').type, `#${bdNum(zi, bi)} / 48`)}</div>
@@ -122,15 +122,26 @@ ORACLE_WIRE.blood = pane => {
   pane.querySelectorAll('[data-bd]').forEach(x => x.onclick = () => { bdType = x.dataset.bd; bdView = null; try { localStorage.setItem('wx-blood', bdType); } catch (e) {} renderPane(); });
   pane.querySelectorAll('[data-bdz]').forEach(x => x.onclick = () => { bdView = [+x.dataset.bdz, +x.dataset.bdb]; renderPane(); });
   const back = pane.querySelector('#bdBack'); if (back) back.onclick = () => { bdView = null; renderPane(); };
-  const btn = pane.querySelector('.info'), pop = pane.querySelector('.info-pop'); if (!btn) return;
-  let hideT = null;
-  const show = () => {
-    clearTimeout(hideT); pop.hidden = false; btn.setAttribute('aria-expanded', 'true');
-    pop.style.left = ''; const r = pop.getBoundingClientRect(), over = r.right - (document.documentElement.clientWidth - 12);
-    if (over > 0) pop.style.left = (parseFloat(getComputedStyle(pop).left) - Math.min(over, r.left - 12)) + 'px';
-  };
-  const hide = () => { hideT = setTimeout(() => { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); }, 250); };
-  pane.onclick = () => { if (!pop.hidden && pane.contains(pop)) { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); } };
-  const wrap = btn.parentNode; if (wrap) { wrap.addEventListener('mouseenter', show); wrap.addEventListener('mouseleave', hide); }
-  btn.onclick = e => { e.stopPropagation(); if (pop.hidden) show(); else { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); } };
 };
+
+/* (i) popover shared by every tab: infoTip() makes the markup, wireTips() runs from renderPane().
+   Hover opens it on desktop, tap on mobile; it sizes to its text and shifts to stay on screen. */
+const infoTip = (label, text) => `<span class="info-wrap"><button type="button" class="info" aria-label="${label}" aria-expanded="false">i</button><span class="info-pop" role="tooltip" hidden>${text}</span></span>`;
+function wireTips(pane) {
+  const tips = [...pane.querySelectorAll('.info-wrap')];
+  const close = w => { w.querySelector('.info-pop').hidden = true; w.querySelector('.info').setAttribute('aria-expanded', 'false'); };
+  tips.forEach(w => {
+    const btn = w.querySelector('.info'), pop = w.querySelector('.info-pop'); let hideT = null;
+    const show = () => {
+      clearTimeout(hideT); tips.forEach(o => o !== w && close(o));
+      pop.hidden = false; btn.setAttribute('aria-expanded', 'true');
+      pop.style.left = ''; const r = pop.getBoundingClientRect(), cw = document.documentElement.clientWidth;
+      const over = r.right - (cw - 12), under = 12 - r.left, cur = parseFloat(getComputedStyle(pop).left);
+      if (over > 0) pop.style.left = (cur - Math.min(over, r.left - 12)) + 'px';
+      else if (under > 0) pop.style.left = (cur + under) + 'px';
+    };
+    w.addEventListener('mouseenter', show); w.addEventListener('mouseleave', () => { hideT = setTimeout(() => close(w), 250); });
+    btn.onclick = e => { e.stopPropagation(); if (pop.hidden) show(); else close(w); };
+  });
+  pane.onclick = () => tips.forEach(close);
+}
