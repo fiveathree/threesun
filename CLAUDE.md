@@ -35,13 +35,14 @@ js/blood.js           48型人格（BLOOD48、T4、paneBlood），同埋共用 �
 js/more.js            T5：誕生石、配對合盤、九星氣學、二十八宿、瑪雅曆、小六壬、盧恩符文、蛇夫座 ophFact()
 js/shushu.js          T6：奇門遁甲、大六壬、七政四餘、印度占星；skyAt() 計行星黃經同上升
 js/persona.js         T7：16型性格、九型人格、能量類型（人類圖概念）
+js/zone48.js          T8：48星區（Z48 名稱同解說、Z48_START 分段日期、paneZone48）
 js/app.js             主程式：計算、各分頁 pane（包括玄空飛星九宮）、商店、貨品頁、啟動
 img/tarot/00–21.jpg   22 張大阿爾克那（1909 Rider 原版掃描，公有領域）
 favicon.svg / favicon-32.png / apple-touch-icon.png
 tests/smoke.js        無頭測試
 ```
 
-**Script 載入次序有關係**（見 `index.html` 底部）：vendor → strokes → data → data2 → oracles → blood → more → shushu → persona → app。
+**Script 載入次序有關係**（見 `index.html` 底部）：vendor → strokes → data → data2 → oracles → blood → more → shushu → persona → zone48 → app。
 - `blood.js`、`more.js`、`shushu.js`、`persona.js` 同 `oracles.js` 一樣：頂層將 `T4`–`T7` 併入 `T2`（`tabs` 同 `groups` 係合併，唔係覆蓋），再將分頁加入 `ORACLE_PANES` / `ORACLE_WIRE`，所以一定要喺 oracles 之後、app 之前載入。後面嘅檔案會用前面嘅嘢（例如 `shushu.js` 用 `more.js` 嘅 `lunarOf`、`KE`）。
 - **ⓘ 說明**：長說明唔好直接放頁面，用 `infoTip(標籤, 文字)` 放喺標題旁邊；`renderPane()` 尾會自動 `wireTips(pane)`。彈窗按文字大小、唔使 scroll、會自動貼返入畫面。
 - 喺 OneDrive 資料夾**唔好用 `git stash`**：OneDrive 鎖住檔案會令 stash pop 只還原一半。
@@ -54,7 +55,7 @@ tests/smoke.js        無頭測試
 - **語言**：`T.zh` / `T.en`，用 `t('key')` 攞。有啲係函數（例如 `t('verdict')(...)`）。加新文字要中英兩邊都加。`#en` hash 打開英文版；揀過嘅語言存 `localStorage`（`wx-lang`）。
 - **分頁**：`GROUPS`（app.js）定義七大類同細項：
   - 命理 `bazi overview ziwei life name nine stone`
-  - 星象 `astro sx xiu qizheng vedic maya`
+  - 星象 `astro zone48 sx xiu qizheng vedic maya`
   - 性格・配對 `blood mbti ennea hd match`
   - 占卜 `tarot rune iching meihua yarrow turtle qian petal`
   - 術數 `qimen liuren xlr`
@@ -88,6 +89,8 @@ tests/smoke.js        無頭測試
 - **印度占星**（`vedic`）：Lahiri 歲差 `23.857 + 0.013969 × (年 - 2000)`，月宿 27 分、每宿 4 pada，Vimshottari 大運。
 - **16型性格 / 九型人格**：本站自寫問卷，答案存 `localStorage`（`wx-16`、`wx-ennea`）。唔好用「MBTI」做分頁名，亦唔好用 16Personalities 嘅類型名。
 - **能量類型**（`hd`）：人類圖概念。13 個天體（日、地、月、南北交點、水至冥王星）喺出生時同太陽倒退 88° 時（`SearchSunLongitude`）嘅位置對應 64 閘門（閘門 41 由黃經 302° 起，`HD_WHEEL`），36 條通道決定中心定義，再判斷類型、權威、人生角色。交點用平交點，未同官方軟件核對。唔好用「Human Design」做分頁名。
+- **48星區**（`zone48`）：每個星座分 I、II、III 加 12 個交界，日期分段跟流行嘅 48 期生日占星（出自《The Secret Language of Birthdays》，1994）。網上流傳嘅中文版性格解說、每週名稱（例如「權威的一週」）同好情侶名單係譯自嗰本書，**唔好照抄**；本站名稱同解說按傳統十度分區原理自寫（I 本星座，II、III 帶同元素另外兩個星座，交界係兩星座混合）。最夾 = 同元素星座同一段 + 對面星座同一段。已核對 3/18 雙魚 III、3/19 交界、1/1–1/2 山羊 I、6/2 雙子 I、11/11 天蠍 II、2/29 雙魚 I，一年 366 日剛好分到 48 區。冇加入五行總覽，因為太陽星座已經喺星盤同 48型人格計咗兩次。
+- **英文格仔斷字**：`softWrap()`（blood.js）喺長英文字每 5 個字母加 `&shy;`，因為部分瀏覽器冇英文斷字字典，手機窄格會亂斷字。
 - **48型人格**（星象分頁 `blood`）：12 星座 × 4 血型。星座用 `sunSign()`，血型喺分頁入面揀（存 `localStorage` `wx-blood`），下面有 48 格一覽可以撳去睇其他類型。類型名同解說全部本站原創；血型性格冇科學根據，說明放喺 ⓘ 彈窗（hover 或撳開，唔使 scroll，會自動貼返入畫面）。配水晶 = 星座 `rec` + `BLOOD_INFO[血型].rec`。
 - **玄空飛星**（風水分頁 `xuankong`，`paneXuankong()`）：九宮格（南方喺上）。每格顯示方位五行（後天八卦）、2026 流年飛星同化解建議、用家八宅本命卦嘅吉凶。撳格用 `showCell()` 原地更新；`renderLuoshu()` / `showCell()` 喺分頁唔喺畫面時會直接 return。八字分頁嘅「睇擺位」掣同頂部導覽「玄空飛星」都用 `openXuankong(cell)` 打開。
 - **2026 流年飛星**：一白入中，五黃在南、二黑在西北（`CELLS[].fs`，飛星內容喺 `STARS`）。**每年立春要更新**，同 `TAISUI_2026`、`sxYear`、`fsTitle`、`fsNote` 文字一齊改。

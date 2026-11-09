@@ -10,7 +10,7 @@ const mk = id => ({ id, innerHTML: '', value: vals[id] ?? '', checked: false, di
 const doc = { documentElement: {}, title: '', getElementById: id => els[id] || (els[id] = mk(id)), querySelectorAll: () => [], addEventListener() {} };
 const ctx = { document: doc, location: { hash: '' }, localStorage: { getItem: () => null, setItem() {} }, navigator: {}, console, setTimeout };
 ctx.window = ctx; ctx.globalThis = ctx; vm.createContext(ctx);
-for (const f of ['vendor/lunar.js', 'vendor/astronomy.min.js', 'strokes.js', 'data.js', 'data2.js', 'oracles.js', 'blood.js', 'more.js', 'shushu.js', 'persona.js'])
+for (const f of ['vendor/lunar.js', 'vendor/astronomy.min.js', 'strokes.js', 'data.js', 'data2.js', 'oracles.js', 'blood.js', 'more.js', 'shushu.js', 'persona.js', 'zone48.js'])
   vm.runInContext(fs.readFileSync(R + f, 'utf8'), ctx, { filename: f });
 vm.runInContext(fs.readFileSync(R + 'app.js', 'utf8') + '\n;this.__={renderPane,setTab:v=>tab=v,setLang:v=>lang=v,applyStatic,setProfile:v=>profile=v,getProfile:()=>profile,GROUPS,HAS_LUNAR,HAS_ASTRO};', ctx, { filename: 'app.js' });
 const api = ctx.__, strip = s => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -30,7 +30,7 @@ for (const L of ['zh', 'en']) {
 api.setLang('zh'); api.setProfile({ ...api.getProfile(), hh: null, mm: null });
 for (const tb of ['ziwei', 'astro', 'bazi']) { api.setTab(tb); api.renderPane(); console.log(' ok  no-time', tb.padEnd(6), '|', strip(els.pane.innerHTML).slice(0, 80)); }
 // Date-driven readings across 400 consecutive days and 12 hours, in both languages (catches table gaps such as a missing mansion).
-const base = Date.UTC(1990, 0, 1), dated = ['bazi', 'overview', 'ziwei', 'life', 'nine', 'stone', 'astro', 'sx', 'xiu', 'qizheng', 'vedic', 'maya', 'blood', 'hd', 'match', 'qimen', 'liuren', 'xlr', 'kua', 'today'];
+const base = Date.UTC(1990, 0, 1), dated = ['bazi', 'overview', 'ziwei', 'life', 'nine', 'stone', 'astro', 'zone48', 'sx', 'xiu', 'qizheng', 'vedic', 'maya', 'blood', 'hd', 'match', 'qimen', 'liuren', 'xlr', 'kua', 'today'];
 let dfails = 0;
 for (let i = 0; i < 400; i++) {
   const dt = new Date(base + i * 864e5), hh = (i * 2) % 24;

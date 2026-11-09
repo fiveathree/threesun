@@ -111,6 +111,7 @@ let bdType = 'A', bdView = null;
 try { const s = localStorage.getItem('wx-blood'); if (BLOOD_TYPES.includes(s)) bdType = s; } catch (e) {}
 const BD_ROWS = [2,3,4,5,6,7,8,9,10,11,0,1];  // Aries first
 const bdEl = z => ({ 火: '火', 土: '土', 風: '金', 水: '水' })[z.el];
+const softWrap = s => isEn() ? s.replace(/([A-Za-z]{5})(?=[A-Za-z]{3})/g, '$1&shy;') : s;   // hyphen points for long English words in narrow grid cells
 const bdNum = (zi, bi) => BD_ROWS.indexOf(zi) * 4 + bi + 1;
 function paneBlood() {
   const mine = ZODIAC.indexOf(sunSign(profile.m, profile.d)), mb = BLOOD_TYPES.indexOf(bdType);
@@ -119,7 +120,7 @@ function paneBlood() {
   const pick = BLOOD_TYPES.map(x => `<button type="button" class="chip" data-bd="${x}" aria-pressed="${x === bdType}">${x}</button>`).join('');
   const grid = `<div class="bd-grid" role="group" aria-label="${t('bdAll')}"><span></span>${BLOOD_TYPES.map(x => `<b>${x}</b>`).join('')}` +
     BD_ROWS.map(r => `<span class="bd-sign">${ZODIAC[r].sym}<small>${isEn() ? ZODIAC[r].en : ZODIAC[r].zh}</small></span>` +
-      BLOOD_TYPES.map((x, j) => `<button type="button" class="bd-cell el-${bdEl(ZODIAC[r])}${r === mine && j === mb ? ' hint' : ''}" data-bdz="${r}" data-bdb="${j}" aria-pressed="${r === zi && j === bi}">${BLOOD48[r][j][k]}</button>`).join('')).join('') + '</div>';
+      BLOOD_TYPES.map((x, j) => `<button type="button" class="bd-cell el-${bdEl(ZODIAC[r])}${r === mine && j === mb ? ' hint' : ''}" data-bdz="${r}" data-bdb="${j}" aria-pressed="${r === zi && j === bi}">${softWrap(BLOOD48[r][j][k])}</button>`).join('')).join('') + '</div>';
   return `<div class="bd-pick"><span class="bd-label">${t('bdPick')}${infoTip(t('bdInfoLabel'), t('bdInfo'))}</span><div class="filters">${pick}</div></div>` +
     block(bdEl(z), `<p class="lead">${isMine ? t('bdLead')(profile.name, sname, b, d[k]) : t('bdOther')(sname, b, d[k])}</p>
     <p style="margin:0">${d[k + 1]}</p>
