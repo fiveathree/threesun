@@ -31,13 +31,15 @@ js/data.js            貨品 PRODUCTS、介面文字 T、五行 EL_INFO、星座
 js/data2.js           T2 文字、出生地 PLACES、紫微、生命靈數、姓名學、八宅 KUA、
                       易經 TRIGRAMS/KW/HEX、籤詩 QIAN、手相面相、農民曆簡轉繁同英譯
 js/oracles.js         有動畫嘅占卜：金錢卦、梅花易數、蓍草占、龜甲占、求籤、數花瓣
+js/blood.js           48型人格：BLOOD48 類型文字、T4 介面文字、paneBlood()
 js/app.js             主程式：計算、各分頁 pane（包括玄空飛星九宮）、商店、貨品頁、啟動
 img/tarot/00–21.jpg   22 張大阿爾克那（1909 Rider 原版掃描，公有領域）
 favicon.svg / favicon-32.png / apple-touch-icon.png
 tests/smoke.js        無頭測試
 ```
 
-**Script 載入次序有關係**（見 `index.html` 底部）：vendor → strokes → data → data2 → oracles → app。
+**Script 載入次序有關係**（見 `index.html` 底部）：vendor → strokes → data → data2 → oracles → blood → app。
+- `blood.js` 同 `oracles.js` 一樣：頂層將 `T4` 併入 `T2`，再將 `paneBlood` 加入 `ORACLE_PANES` / `ORACLE_WIRE`，所以一定要喺 oracles 之後、app 之前載入。
 - `oracles.js` 喺 `app.js` 之前載入，佢喺頂層將 `T3` 併入 `T2`；佢嘅函數用 `app.js` 嘅 helper（`t`、`block`、`recList`…），但只喺函數入面用，所以冇問題。
 - `app.js` 第一行將 `T2` 併入 `T`。
 - 所有 script 都係 classic script，頂層 `const`/`let` 共用同一個全域範圍：**新變數唔可以同其他檔案撞名**，否則成個頁面 SyntaxError。
@@ -47,7 +49,7 @@ tests/smoke.js        無頭測試
 - **語言**：`T.zh` / `T.en`，用 `t('key')` 攞。有啲係函數（例如 `t('verdict')(...)`）。加新文字要中英兩邊都加。`#en` hash 打開英文版；揀過嘅語言存 `localStorage`（`wx-lang`）。
 - **分頁**：`GROUPS`（app.js）定義五大類同細項：
   - 命理 `bazi ziwei life name`
-  - 星象 `astro sx`
+  - 星象 `astro sx blood`
   - 占卜 `tarot iching meihua yarrow turtle qian petal`
   - 風水 `kua xuankong almanac today`
   - 相學 `palm`
@@ -66,6 +68,7 @@ tests/smoke.js        無頭測試
 - **姓名學**：康熙筆劃五格（天人地外總）、81 數理吉凶表、三才。數字字（一至十）按數值計。
 - **八宅本命卦**：按立春年同性別；公式喺 `kuaOf()`，已用 1986 男 = 坤 2、女 = 坎 1、2000 男 = 離 9、女 = 乾 6 核對。九宮擺位亦顯示本命卦吉凶。
 - **農民曆**：lunar-javascript 嘅宜忌（簡體）經 `toTrad()` 轉繁體；英文翻譯喺 `YIJI_EN`，冇翻譯就顯示中文。
+- **48型人格**（星象分頁 `blood`）：12 星座 × 4 血型。星座用 `sunSign()`，血型喺分頁入面揀（存 `localStorage` `wx-blood`），下面有 48 格一覽可以撳去睇其他類型。類型名同解說全部本站原創；血型性格冇科學根據，說明放喺 ⓘ 彈窗（hover 或撳開，唔使 scroll，會自動貼返入畫面）。配水晶 = 星座 `rec` + `BLOOD_INFO[血型].rec`。
 - **玄空飛星**（風水分頁 `xuankong`，`paneXuankong()`）：九宮格（南方喺上）。每格顯示方位五行（後天八卦）、2026 流年飛星同化解建議、用家八宅本命卦嘅吉凶。撳格用 `showCell()` 原地更新；`renderLuoshu()` / `showCell()` 喺分頁唔喺畫面時會直接 return。八字分頁嘅「睇擺位」掣同頂部導覽「玄空飛星」都用 `openXuankong(cell)` 打開。
 - **2026 流年飛星**：一白入中，五黃在南、二黑在西北（`CELLS[].fs`，飛星內容喺 `STARS`）。**每年立春要更新**，同 `TAISUI_2026`、`sxYear`、`fsTitle`、`fsNote` 文字一齊改。
 - **蓍草占**：完整大衍之數 49 根、十八變。3000 次模擬嘅比例接近傳統 1:5:7:3。

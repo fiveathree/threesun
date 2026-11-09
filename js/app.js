@@ -97,7 +97,7 @@ const fact = (k, v, cls = '') => `<div class="fact"><small>${k}</small><b class=
 let profile = null, pickEl = null, fType = 'all', fEl = 'all', tab = 'bazi', tarotDraw = null, curCell = CELLS[4], openId = null;
 let nameIn = { sur: '林', given: '雅琪' }, palmAns = { hand: 2, finger: 2, face: 2 };
 let alPick = '嫁娶', alY = null, alM = null;
-const GROUPS = { fate: ['bazi','ziwei','life','name'], stars: ['astro','sx'], div: ['tarot','iching','meihua','yarrow','turtle','qian','petal'], fs: ['kua','xuankong','almanac','today'], phys: ['palm'] };
+const GROUPS = { fate: ['bazi','ziwei','life','name'], stars: ['astro','sx','blood'], div: ['tarot','iching','meihua','yarrow','turtle','qian','petal'], fs: ['kua','xuankong','almanac','today'], phys: ['palm'] };
 const groupOf = k => Object.keys(GROUPS).find(g => GROUPS[g].includes(k));
 
 function readProfile() {

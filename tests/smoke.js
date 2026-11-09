@@ -10,7 +10,7 @@ const mk = id => ({ id, innerHTML: '', value: vals[id] ?? '', checked: false, di
 const doc = { documentElement: {}, title: '', getElementById: id => els[id] || (els[id] = mk(id)), querySelectorAll: () => [], addEventListener() {} };
 const ctx = { document: doc, location: { hash: '' }, localStorage: { getItem: () => null, setItem() {} }, navigator: {}, console, setTimeout };
 ctx.window = ctx; ctx.globalThis = ctx; vm.createContext(ctx);
-for (const f of ['vendor/lunar.js', 'vendor/astronomy.min.js', 'strokes.js', 'data.js', 'data2.js', 'oracles.js'])
+for (const f of ['vendor/lunar.js', 'vendor/astronomy.min.js', 'strokes.js', 'data.js', 'data2.js', 'oracles.js', 'blood.js'])
   vm.runInContext(fs.readFileSync(R + f, 'utf8'), ctx, { filename: f });
 vm.runInContext(fs.readFileSync(R + 'app.js', 'utf8') + '\n;this.__={renderPane,setTab:v=>tab=v,setLang:v=>lang=v,applyStatic,setProfile:v=>profile=v,getProfile:()=>profile,GROUPS,HAS_LUNAR,HAS_ASTRO};', ctx, { filename: 'app.js' });
 const api = ctx.__, strip = s => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
