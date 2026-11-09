@@ -105,9 +105,10 @@ function paneStone() {
   const m = stView || profile.m, s = BSTONE[m - 1], L5 = isEn() ? s.en : s.zh, z = sunSign(profile.m, profile.d);
   const zs = z.rec.map(id => L(byId(id)).name).join(t('sep'));
   const months = BSTONE.map((x, i) => `<button type="button" class="chip st-chip" data-stm="${i + 1}" aria-pressed="${i + 1 === m}"><i style="background:${x.c}"></i>${t('stM')(i + 1)}${i + 1 === profile.m ? ' ★' : ''}</button>`).join('');
-  return block(z.el === '水' ? '水' : ZEL[z.el], `<p class="lead">${m === profile.m ? t('stLead')(profile.name, L5[0]) : t('stOther')(isEn() ? t('stM')(m) : m, L5[0])}${infoTip(t('whatIs'), t('stInfo'))}</p>
+  const sel = byId(s.rec[0]).el;
+  return block(sel, `<p class="lead">${m === profile.m ? t('stLead')(profile.name, L5[0]) : t('stOther')(isEn() ? t('stM')(m) : m, L5[0])}${infoTip(t('whatIs'), t('stInfo'))}</p>
     <div class="facts">${fact(t('stFacts').month, t('stM')(m))}${fact(t('stFacts').color, `<i class="swatch" style="background:${s.c}"></i>${L5[1]}`)}${fact(t('stFacts').mean, L5[2])}${m === profile.m ? fact(t('stFacts').zodiac, zs) : ''}</div>`) +
-    `<h4 class="bd-h">${t('stAll')}</h4><div class="filters">${months}</div>` + recList([...s.rec, ...(m === profile.m ? z.rec : [])]);
+    `<h4 class="bd-h">${t('stAll')}</h4><div class="filters">${months}</div>` + crystalsFor(sel, s.rec[0]);
 }
 
 /* ---------- 配對合盤 ---------- */
@@ -138,7 +139,7 @@ function paneMatch(c) {
     block(sc >= 72 ? '木' : sc >= 60 ? '土' : '火', `<p class="lead">${t('mtLead')(profile.name, esc(mtIn.name), sc)}${infoTip(t('whatIs'), t('mtInfo'))}</p>
     <p style="margin:0">${t('mtVerdict')(sc)}</p>
     <div class="facts">${fact(t('mtFacts').star, `${z1.sym} × ${z2.sym} ${t('mtStar')[starK]}`, cls(starK))}${fact(t('mtFacts').sx, `${an(b1)} × ${an(b2)} ${t('mtSx')[sxK]}`, cls(sxK))}${fact(t('mtFacts').dm, `${t('elName')(e1)} × ${t('elName')(e2)} ${t('mtDm')[dmK]}`, cls(dmK))}</div>
-    <p class="note">${nm(z1)} × ${nm(z2)}</p><p style="margin:0">${t('mtRec')}</p>`) + recList([...recsOfEl(pickEl, 1), ...recsOfEl(w2, 1), 'B04']);
+    <p class="note">${nm(z1)} × ${nm(z2)}</p><p style="margin:0">${t('mtRec')}</p>`) + crystalsFor(w2);
 }
 
 /* ---------- 九星氣學 ---------- */
@@ -173,7 +174,7 @@ function paneNine(c) {
   return block(NINE[ys].el, `<p class="lead">${t('nnLead')(profile.name, N(ys)[0])}${infoTip(t('whatIs'), t('nnInfo'))}</p>
     <p style="margin:0">${N(ys)[1]}</p>
     <div class="facts">${fact(t('nnFacts').month, N(ms)[0])}${fact(t('nnFacts').el, t('elName')(NINE[ys].el))}${fact(t('nnFacts').y26, cell[lang].dir)}</div>
-    <p style="margin:0"><strong>${t('nnYear')}：</strong>${NINE_YEAR[ci][i]}</p>`) + recList([...recsOfEl(NINE[ys].el, 2), ...recsOfEl(NINE[ms].el, 1)]);
+    <p style="margin:0"><strong>${t('nnYear')}：</strong>${NINE_YEAR[ci][i]}</p>`) + crystalsFor(NINE[ys].el);
 }
 
 /* ---------- 二十八宿 ---------- */
@@ -215,7 +216,7 @@ function paneXiu() {
   const el = ZHENG_EL[z], name = isEn() ? `${x} · ${X[0]}` : `${x}宿`;
   return block(el, `<p class="lead">${t('xuLead')(profile.name, name)}${infoTip(t('whatIs'), t('xuInfo'))}</p>
     <p style="margin:0">${isEn() ? X[2] : X[1]}</p>
-    <div class="facts">${fact(t('xuFacts').shou, isEn() ? SHOU_EN[sh] : `${sh}（${toTrad(l.getGong())}方）`)}${fact(t('xuFacts').zheng, isEn() ? ZHENG_EN[z] : z)}${fact(t('xuFacts').animal, toTrad(l.getAnimal()))}${fact(t('xuFacts').luck, t('xuLuck')[lk] || lk, lk === '吉' ? 'good' : 'bad')}</div>`) + recList([...recsOfEl(el, 2), ...recsOfEl(pickEl, 1)]);
+    <div class="facts">${fact(t('xuFacts').shou, isEn() ? SHOU_EN[sh] : `${sh}（${toTrad(l.getGong())}方）`)}${fact(t('xuFacts').zheng, isEn() ? ZHENG_EN[z] : z)}${fact(t('xuFacts').animal, toTrad(l.getAnimal()))}${fact(t('xuFacts').luck, t('xuLuck')[lk] || lk, lk === '吉' ? 'good' : 'bad')}</div>`) + crystalsFor(el);
 }
 
 /* ---------- 瑪雅曆 (13 Moon / Dreamspell count) ---------- */
@@ -255,7 +256,7 @@ function paneMaya() {
   const nm = isEn() ? `${Tn[1]} ${S[1]}` : `${Tn[0]}的${S[0]}`;
   const tS = SEALS[(tk - 1) % 20], tT = TONES[(tk - 1) % 13];
   return block(el, `<p class="lead">${t('myLead')(profile.name, kin, nm)}${infoTip(t('whatIs'), t('myInfo'))}</p>
-    <div class="facts">${fact(t('myFacts').seal, isEn() ? `${S[1]}: ${S[3]}` : `${S[0]}：${S[2]}`)}${fact(t('myFacts').tone, isEn() ? `${tn + 1} ${Tn[1]}: ${TONE_EN[tn]}` : `${tn + 1} ${Tn[0]}：${Tn[2]}`)}${fact(t('myFacts').today, `${tk} ${isEn() ? `${tT[1]} ${tS[1]}` : `${tT[0]}的${tS[0]}`}`)}</div>`) + recList([...recsOfEl(el, 2), ...recsOfEl(pickEl, 1)]);
+    <div class="facts">${fact(t('myFacts').seal, isEn() ? `${S[1]}: ${S[3]}` : `${S[0]}：${S[2]}`)}${fact(t('myFacts').tone, isEn() ? `${tn + 1} ${Tn[1]}: ${TONE_EN[tn]}` : `${tn + 1} ${Tn[0]}：${Tn[2]}`)}${fact(t('myFacts').today, `${tk} ${isEn() ? `${tT[1]} ${tS[1]}` : `${tT[0]}的${tS[0]}`}`)}</div>`) + crystalsFor(el);
 }
 
 /* ---------- 小六壬 ---------- */
@@ -277,7 +278,7 @@ function paneXlr() {
   return `<div class="filters"><button type="button" class="chip" data-xl="0" aria-pressed="${!xlNow}">${t('xlBirth')}</button><button type="button" class="chip" data-xl="1" aria-pressed="${xlNow}">${t('xlNow')}</button></div>` +
     block(R.el, `<p class="lead">${t('xlLead')(N(R)[0])}${infoTip(t('whatIs'), t('xlInfo'))}</p><p style="margin:0">${N(R)[1]}</p>
     <div class="xl-ring">${ring}</div>
-    <p class="note">${t('xlSteps')(lm, ld, hz == null ? '?' : BR[hz])}</p>`) + recList(recsOfEl(R.el, 3));
+    <p class="note">${t('xlSteps')(lm, ld, hz == null ? '?' : BR[hz])}</p>`) + crystalsFor(R.el);
 }
 
 /* ---------- 盧恩符文 ---------- */
@@ -322,7 +323,7 @@ function paneRune() {
       <b class="tname">${r.n} · ${R[0]}</b><span class="ori">${d.rev ? t('rnRev') : t('rnUp')}</span><p>${d.rev ? R[2] : R[1]}</p></div>`;
   }).join('');
   return `<p style="margin:0"><button type="button" class="btn" id="rnDraw">${t('rnDraw')}</button>${infoTip(t('whatIs'), t('rnInfo'))}</p>
-    <div class="spread">${cards}</div>${recList(runeDraw.map(d => RUNES[d.i].rec))}`;
+    <div class="spread">${cards}</div>${crystalsFor(RUNES[runeDraw[1].i].el, RUNES[runeDraw[1].i].rec)}`;
 }
 
 /* ---------- 蛇夫座 (used by paneAstro) ---------- */

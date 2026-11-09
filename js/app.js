@@ -89,6 +89,16 @@ function recList(ids) {
     `<button type="button" class="rec el-${p.el}" data-open="${p.id}">${drawProduct(p)}<span>${L(p).name}<small>${fmt(p.price)}</small></span></button>`).join('')}</div></div>`;
 }
 const recsOfEl = (el, n = 3) => PRODUCTS.filter(p => p.el === el).map(p => p.id).slice(0, n);
+/* One rule for every reading: the reading's element → its bracelet and ornament, plus a bracelet for the
+   user's weakest Bazi element (or the element that feeds it, when they are the same). lastEl lets 五行總覽 collect results. */
+let lastEl = null;
+function crystalsFor(el, lead) {
+  lastEl = el;
+  const own = pickEl === el ? Object.keys(GEN).find(k => GEN[k] === el) : pickEl;
+  const of = (e, type) => (PRODUCTS.find(p => p.el === e && p.type === type) || {}).id;
+  const nm = t('elName');
+  return recList([lead || of(el, '手鏈'), of(own, '手鏈'), of(el, '擺件')]).replace('</h4>', `</h4><p class="recs-why">${t('recWhy')(nm(el), nm(own), pickEl === el ? nm(pickEl) : '')}</p>`);
+}
 function wireOpen(root) { root.querySelectorAll('[data-open]').forEach(a => a.onclick = e => { e.preventDefault(); openPassport(a.dataset.open); }); }
 const block = (el, html) => `<div class="el-${el} stack">${html}</div>`;
 const fact = (k, v, cls = '') => `<div class="fact"><small>${k}</small><b class="${cls}">${v}</b></div>`;
@@ -97,7 +107,7 @@ const fact = (k, v, cls = '') => `<div class="fact"><small>${k}</small><b class=
 let profile = null, pickEl = null, fType = 'all', fEl = 'all', tab = 'bazi', tarotDraw = null, curCell = CELLS[4], openId = null;
 let nameIn = { sur: '林', given: '雅琪' }, palmAns = { hand: 2, finger: 2, face: 2 };
 let alPick = '嫁娶', alY = null, alM = null;
-const GROUPS = { fate: ['bazi','ziwei','life','name','nine','stone'], stars: ['astro','sx','xiu','qizheng','vedic','maya'], persona: ['blood','mbti','ennea','hd','match'], div: ['tarot','rune','iching','meihua','yarrow','turtle','qian','petal'], shu: ['qimen','liuren','xlr'], fs: ['kua','xuankong','almanac','today'], phys: ['palm'] };
+const GROUPS = { fate: ['bazi','overview','ziwei','life','name','nine','stone'], stars: ['astro','sx','xiu','qizheng','vedic','maya'], persona: ['blood','mbti','ennea','hd','match'], div: ['tarot','rune','iching','meihua','yarrow','turtle','qian','petal'], shu: ['qimen','liuren','xlr'], fs: ['kua','xuankong','almanac','today'], phys: ['palm'] };
 const groupOf = k => Object.keys(GROUPS).find(g => GROUPS[g].includes(k));
 
 function readProfile() {
@@ -160,7 +170,7 @@ function paneBazi(c) {
     <div class="bars">${bars}</div>
     <div class="verdict">${t('verdict')(profile.name, dm, nm(c.dmEl), total, missing.map(nm), c.weak.map(nm), info(pickEl))}
       <div class="row"><button class="btn" type="button" id="seePicks">${t('seePicks')(pickEl)}</button><button class="btn ghost" type="button" id="seePlace">${t('seePlace')}</button></div>
-    </div></div>${recList(recsOfEl(pickEl, 6))}`;
+    </div></div>${crystalsFor(pickEl)}`;
 }
 
 /* ---------- 紫微斗數 ---------- */
@@ -217,11 +227,10 @@ function paneZiwei() {
      <b>${profile.name || (isEn() ? 'Chart' : '命盤')}</b>
      <span>${lunarStr}</span><span>${JU_NAME[isEn() ? 'en' : 'zh'][z.ju]}</span>
      <span>${t('zwFacts').ming} ${ST[z.stemOf(z.ming)]}${BR[z.ming]} · ${t('zwFacts').shen} ${BR[z.shen]}</span></div>`;
-  return block(first.el, `<p class="lead">${t('zwLead')(profile.name, lead)}</p>
+  return block(first.el, `<p class="lead">${t('zwLead')(profile.name, lead)}${infoTip(t('whatIs'), t('zwNote'))}</p>
     ${borrowed ? `<p class="sub">${t('zwEmpty')}</p>` : ''}
     <p style="margin:0">${mainStars.map(n => `<strong>${starName(n)}</strong>${isEn() ? ': ' + ZW_MAIN[n].en_d : '：' + ZW_MAIN[n].zh_d}`).join('<br>')}</p>
-    <div class="zw-wrap"><div class="zw-grid">${cellsHtml}${center}</div></div>
-    <p class="note">${t('zwNote')}</p>`) + recList(mainStars.flatMap(n => ZW_MAIN[n].rec));
+    <div class="zw-wrap"><div class="zw-grid">${cellsHtml}${center}</div></div>`) + crystalsFor(first.el);
 }
 
 /* ---------- 生命靈數 ---------- */
@@ -237,11 +246,10 @@ function paneLife() {
   const missing = [1,2,3,4,5,6,7,8,9].filter(n => !cnt[n]);
   const d = LIFE[r][isEn() ? 'en' : 'zh'];
   const el = ['','火','火','土','木','水','水','火','金','金'][r];
-  return block(el, `<p class="lead">${t('lpLead')(profile.name, label)}</p>
+  return block(el, `<p class="lead">${t('lpLead')(profile.name, label)}${infoTip(t('whatIs'), t('lpNote'))}</p>
     <p style="margin:0"><strong>${d[0]}</strong><br>${d[1]}</p>
     <div class="lp-wrap"><div><h4 class="mini">${t('lpGrid')}</h4><div class="lp-grid">${grid}</div></div>
-      <div class="facts" style="flex:1">${fact(t('lpLines'), lines.length ? lines.map(l => isEn() ? l.en : l.zh).join(t('sep')) : t('lpNoLine'))}${fact(t('lpMissing'), missing.length ? missing.join(isEn() ? ', ' : '、') : t('lpNone'))}</div></div>
-    <p class="note">${t('lpNote')}</p>`) + recList([LIFE[r].c, ...missing.slice(0, 2).map(n => LIFE[n].c)]);
+      <div class="facts" style="flex:1">${fact(t('lpLines'), lines.length ? lines.map(l => isEn() ? l.en : l.zh).join(t('sep')) : t('lpNoLine'))}${fact(t('lpMissing'), missing.length ? missing.join(isEn() ? ', ' : '、') : t('lpNone'))}</div></div>`) + crystalsFor(el);
 }
 
 /* ---------- 姓名學 ---------- */
@@ -273,10 +281,9 @@ function paneName() {
   const nm = t('elName');
   const chars = [...sur, ...giv].map((c, i) => `<span class="nm-ch"><b>${c}</b><small>${(i < sur.length ? S[i] : G[i - sur.length])}</small></span>`).join('');
   const rows = Object.keys(g5).map(k => `<div class="nm-row"><span>${t('nmGrids')[k]}<small>${t('nmRole')[k]}</small></span><b>${g5[k]}</b><i class="el-${elOf(g5[k])}" style="color:var(--c)">${nm(elOf(g5[k]))}</i><em class="lk ${luck(g5[k])}">${t('nmLuck')[luck(g5[k])]}</em></div>`).join('');
-  return form + block(eR, `<div class="nm-chars">${chars}</div>
+  return form + block(eR, `<div class="nm-chars">${chars}${infoTip(t('whatIs'), t('nmNote'))}</div>
     <div class="nm-table">${rows}</div>
-    <p style="margin:0">${t('nmSum')(good, 5)} ${t('nmSancai')}：${nm(eT)} → ${nm(eR)} → ${nm(eD)}（${t('nmRel')[rel(eT, eR)]}、${t('nmRel')[rel(eR, eD)]}）</p>
-    <p class="note">${t('nmNote')}</p>`) + recList([...recsOfEl(eR, 2), ...recsOfEl(Object.keys(GEN).find(k => GEN[k] === eR), 1)]);
+    <p style="margin:0">${t('nmSum')(good, 5)} ${t('nmSancai')}：${nm(eT)} → ${nm(eR)} → ${nm(eD)}（${t('nmRel')[rel(eT, eR)]}、${t('nmRel')[rel(eR, eD)]}）</p>`) + crystalsFor(eR);
 }
 
 /* ---------- 星盤 ---------- */
@@ -306,12 +313,11 @@ function paneAstro() {
   }
   const sun = sun0, i = isEn() ? 1 : 0;
   const el = {火:'火',土:'土',風:'金',水:'水'}[sun.el];
-  return block(el, `<p class="lead">${t('zLead')(profile.name, nameOf(sun))}</p>
+  return block(el, `<p class="lead">${t('zLead')(profile.name, nameOf(sun))}${infoTip(t('whatIs'), t('astNote'))}</p>
     ${moonZ ? `<p class="sub" style="margin:0">${t('astLead')(profile.name, isEn() ? sun.en : sun.zh, isEn() ? moonZ.en : moonZ.zh, ascZ ? (isEn() ? ascZ.en : ascZ.zh) : '')}</p>` : ''}
     <div class="facts">${fact(t('zFacts').range, sun.range[i])}${fact(t('zFacts').el, isEn() ? sun.elEn : ZODIAC_EL_ZH[sun.el])}${fact(t('zFacts').ruler, sun.kw[i])}${ophFact()}</div>
     ${rows ? `<div class="ast-table">${rows}</div>` : ''}
-    ${!hasTime ? `<p class="note">${t('astNoAsc')}</p>` : ''}
-    <p class="note">${t('astNote')}</p>`) + recList([...sun.rec, ...(moonZ ? [moonZ.rec[0]] : []), ...(ascZ ? [ascZ.rec[0]] : [])]);
+    ${!hasTime ? `<p class="note">${t('astNoAsc')}</p>` : ''}`) + crystalsFor(el);
 }
 
 /* ---------- 生肖太歲 ---------- */
@@ -322,12 +328,11 @@ function paneSx(c) {
   const kind = rel === 'none' ? 'none' : (rel === 'sanhe' || rel === 'liuhe') ? 'good' : 'bad';
   const group = SANHE.find(g => g.includes(b)).filter(x => x !== b);
   const aname = x => isEn() ? ANI_EN[x] : ANI_ZH[x];
-  const el = kind === 'bad' ? '火' : kind === 'good' ? '木' : BR_EL[b];
-  const recs = kind === 'bad' ? ['B09','B08','D05'] : kind === 'good' ? ['B05','B07','D03'] : recsOfEl(pickEl);
+  const el = kind === 'bad' ? '水' : kind === 'good' ? '土' : pickEl;   // 2026 火年：犯太歲以水制火；合太歲取火生土
   return block(el, `<p class="lead">${t('sxLead')(profile.name, ani)}</p>
     <p class="sub">${t('sxYear')}</p>
     <div class="facts">${fact(t('sxFacts').rel, t('sxRel')[rel], kind === 'bad' ? 'warn' : kind === 'good' ? 'good' : '')}${fact(t('sxFacts').ally, group.map(aname).join(t('sep')))}${fact(t('sxFacts').pair, aname(LIUHE[b]))}</div>
-    <p style="margin:0">${t('sxAdvice')[kind]}</p>`) + recList(recs);
+    <p style="margin:0">${t('sxAdvice')[kind]}</p>`) + crystalsFor(el);
 }
 
 /* ---------- 塔羅 ---------- */
@@ -348,10 +353,10 @@ function paneTarot() {
       <span class="ori">${d.rev ? t('rev') : t('up')}</span>
       <p>${(d.rev ? c.rv : c.up)[k]}</p></div>`;
   }).join('');
-  return `<form class="tq" id="tqForm"><label for="tq">${t('tQ')}<input id="tq" type="text" value="${esc(q)}" placeholder="${t('tQPh')}"></label><button class="btn" type="submit">${t('tDraw')}</button></form>
-    <p class="note">${t('tHint')}</p>
+  const el = byId(TAROT[tarotDraw[1].i].rec).el;   // 「現在」嗰張牌嘅五行
+  return `<form class="tq" id="tqForm"><label for="tq">${t('tQ')}<input id="tq" type="text" value="${esc(q)}" placeholder="${t('tQPh')}"></label><button class="btn" type="submit">${t('tDraw')}</button>${infoTip(t('whatIs'), t('tHint'))}</form>
     ${q ? `<p class="sub" style="margin:0">${t('tSum')(esc(q))}</p>` : ''}
-    <div class="spread">${cards}</div>${recList(tarotDraw.map(d => TAROT[d.i].rec))}`;
+    <div class="spread">${cards}</div>${crystalsFor(el)}`;
 }
 
 /* ---------- 八宅本命卦 ---------- */
@@ -372,10 +377,9 @@ function paneKua(c) {
     const gi = K.good.indexOf(d);
     return `<div class="kua-cell ${gi >= 0 ? 'good' : 'bad'}"><b>${DIRS[d][li]}</b><small>${gi >= 0 ? t('kuaNames')[gi] : '·'}</small></div>`;
   }).join('');
-  return block(K.el, `<p class="lead">${t('kuaLead')(profile.name, `${isEn() ? K.en : K.zh}・${t('kuaGroup')[K.g]}`)}</p>
+  return block(K.el, `<p class="lead">${t('kuaLead')(profile.name, `${isEn() ? K.en : K.zh}・${t('kuaGroup')[K.g]}`)}${infoTip(t('whatIs'), t('kuaNote'))}</p>
     <div class="kua-wrap"><div class="kua-grid">${grid}</div>
-    <div class="stack" style="flex:1;min-width:0"><h4 class="mini">${t('kuaGood')}</h4>${goodRows}<h4 class="mini">${t('kuaBad')}</h4><p style="margin:0">${bad.map(d => DIRS[d][li]).join(t('sep'))}</p></div></div>
-    <p class="note">${t('kuaNote')}</p>`) + recList(recsOfEl(K.el));
+    <div class="stack" style="flex:1;min-width:0"><h4 class="mini">${t('kuaGood')}</h4>${goodRows}<h4 class="mini">${t('kuaBad')}</h4><p style="margin:0">${bad.map(d => DIRS[d][li]).join(t('sep'))}</p></div></div>`) + crystalsFor(K.el);
 }
 
 /* ---------- 農民曆 ---------- */
@@ -405,7 +409,7 @@ function paneAlmanac() {
     <div class="cal-head"><label for="alPick">${t('alPick')}<select id="alPick">${ALMANAC_PICKS.map(p => `<option value="${p}"${p === alPick ? ' selected' : ''}>${isEn() ? YIJI_EN[p] + ' ' + p : p}</option>`).join('')}</select></label>
       <div class="cal-nav"><button type="button" class="chip" id="alPrev" aria-label="${t('alPrev')}">‹</button><b>${monthLabel}</b><button type="button" class="chip" id="alNext" aria-label="${t('alNext')}">›</button></div></div>
     <div class="cal">${wk.map(w => `<div class="cal-wk">${w}</div>`).join('')}${cells}</div>
-    <p class="note"><span class="cal-key ok"></span>${t('alGood')}　${t('alNote')}</p>`) + recList(recsOfEl(el));
+    <p class="note"><span class="cal-key ok"></span>${t('alGood')}${infoTip(t('whatIs'), t('alNote'))}</p>`) + crystalsFor(el);
 }
 
 /* ---------- 今日運勢 ---------- */
@@ -420,17 +424,14 @@ function paneToday(c) {
   const scores = [base, clamp(base + Math.round(r() * 2 - 1)), clamp(base + Math.round(r() * 2 - 1)), clamp(base + (rel === 'cai' ? 1 : 0) + Math.round(r() * 2 - 1))];
   const luckyEl = rel === 'ke' ? Object.keys(GEN).find(k => GEN[k] === me) : pickEl;
   const inf = info(luckyEl);
-  const pool = PRODUCTS.filter(p => p.el === luckyEl);
-  const pick = pool[Math.floor(r() * pool.length)];
   const num = 1 + Math.floor(r() * 9);
   const dateStr = isEn() ? now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : `${y}年${m}月${d}日`;
   const dayP = isEn() ? `${ST[tp[0]]}${BR[tp[1]]} (${EL_EN[tEl]})` : `${ST[tp[0]]}${BR[tp[1]]}（${tEl}）`;
   const rows = t('todayRows').map((lab, i) => `<div class="star-row"><span>${lab}</span><div class="pips" aria-label="${scores[i]}/5">${[1,2,3,4,5].map(n => `<i class="pip${n <= scores[i] ? ' on' : ''}"></i>`).join('')}</div></div>`).join('');
-  return block(luckyEl, `<p class="lead">${t('todayLead')(dateStr)}<span class="sub" style="display:block;font-family:var(--body);font-size:14px">${t('todayDay')(dayP)}</span></p>
+  return block(luckyEl, `<p class="lead">${t('todayLead')(dateStr)}<span class="sub" style="display:block;font-family:var(--body);font-size:14px">${t('todayDay')(dayP)}</span>${infoTip(t('whatIs'), t('todayNote'))}</p>
     <p style="margin:0">${t('todayRel')[rel]}</p>
     <div class="stars">${rows}</div>
-    <div class="facts">${fact(t('todayFacts').color, inf.color)}${fact(t('todayFacts').num, num)}${fact(t('todayFacts').dir, inf.dir)}</div>
-    <p class="note">${t('todayNote')}</p>`) + recList([pick.id]);
+    <div class="facts">${fact(t('todayFacts').color, inf.color)}${fact(t('todayFacts').num, num)}${fact(t('todayFacts').dir, inf.dir)}</div>`) + crystalsFor(luckyEl);
 }
 
 /* ---------- 手相面相 ---------- */
@@ -442,20 +443,39 @@ function panePalm() {
   const order = ELS.slice().sort((a, b) => score[b] - score[a]);
   const [a, b] = order, nm = t('elName');
   const label = score[b] && score[b] >= score[a] / 2 ? t('pmMix')(nm(a), nm(b)) : t('pmPure')(nm(a));
-  const parent = Object.keys(GEN).find(k => GEN[k] === a);
-  return `<div class="palm-form">${sel('hand')}${sel('finger')}${sel('face')}</div>` + block(a, `<p class="lead">${t('pmLead')(label)}</p>
-    <p style="margin:0">${PALM_TYPE[a][isEn() ? 'en' : 'zh']}${score[b] ? ' ' + PALM_TYPE[b][isEn() ? 'en' : 'zh'] : ''}</p>
-    <p class="note">${t('pmNote')}</p>`) + recList([...recsOfEl(a, 2), ...recsOfEl(parent, 1)]);
+  return `<div class="palm-form">${sel('hand')}${sel('finger')}${sel('face')}</div>` + block(a, `<p class="lead">${t('pmLead')(label)}${infoTip(t('whatIs'), t('pmNote'))}</p>
+    <p style="margin:0">${PALM_TYPE[a][isEn() ? 'en' : 'zh']}${score[b] ? ' ' + PALM_TYPE[b][isEn() ? 'en' : 'zh'] : ''}</p>`) + crystalsFor(a);
+}
+
+/* ---------- 五行總覽 ---------- */
+const OV_KEYS = ['bazi','ziwei','life','nine','stone','astro','sx','xiu','qizheng','vedic','maya','blood','hd','kua','mbti','ennea'];
+function paneOverview(c) {
+  const P = paneMap(c), got = [];
+  OV_KEYS.forEach(k => {
+    if (k === 'mbti' && ans16.some(a => a == null)) return;
+    if (k === 'ennea' && !enPick.length) return;
+    lastEl = null; try { P[k](); } catch (e) { return; }
+    if (lastEl) got.push([k, lastEl]);
+  });
+  if (!got.length) return `<p>${t('ovNone')}</p>`;
+  const cnt = {}; ELS.forEach(e => cnt[e] = got.filter(g => g[1] === e).length);
+  const top = ELS.slice().sort((a, b) => cnt[b] - cnt[a] || (b === pickEl) - (a === pickEl))[0], nm = t('elName'), max = Math.max(...ELS.map(e => cnt[e]));
+  const bars = ELS.map(e => `<div class="bar el-${e}"><b>${nm(e)}</b><div class="track"><div class="fill" style="width:${cnt[e] / max * 100}%"></div></div><span>${cnt[e]}</span></div>`).join('');
+  const list = got.map(([k, e]) => `<button type="button" class="chip ov-item el-${e}" data-goto="${k}"><i></i>${t('tabs')[k]} · ${nm(e)}</button>`).join('');
+  return block(top, `<p class="lead">${t('ovLead')(nm(top))}${infoTip(t('whatIs'), t('ovInfo'))}</p>
+    <p style="margin:0">${t('ovSum')(got.length, cnt[top], nm(top))}</p>
+    <div class="bars">${bars}</div><div class="filters">${list}</div>`) + crystalsFor(top);
 }
 
 /* ---------- pane router ---------- */
+const paneMap = c => ({ bazi: () => paneBazi(c), overview: () => paneOverview(c), ziwei: paneZiwei, life: paneLife, name: paneName, astro: paneAstro, sx: () => paneSx(c), tarot: paneTarot, kua: () => paneKua(c), almanac: paneAlmanac, today: () => paneToday(c), palm: panePalm, xuankong: paneXuankong, ...ORACLE_PANES });
 function renderPane() {
   const c = chartData();
   pickEl = c.weak[0];
   const pane = $('pane');
   pane.className = 'tabpane el-' + pickEl;
   pane.setAttribute('aria-labelledby', 'tab-' + tab);
-  const P = { bazi: () => paneBazi(c), ziwei: paneZiwei, life: paneLife, name: paneName, astro: paneAstro, sx: () => paneSx(c), tarot: paneTarot, kua: () => paneKua(c), almanac: paneAlmanac, today: () => paneToday(c), palm: panePalm, xuankong: paneXuankong, ...ORACLE_PANES };
+  const P = paneMap(c);
   try { pane.innerHTML = P[tab](); } catch (err) { pane.innerHTML = `<p class="warn">${esc(err.message)}</p>`; console.error(err); }
   wireOpen(pane);
   const on = (id, fn, ev = 'onclick') => { const el = $(id); if (el) el[ev] = fn; };
@@ -468,6 +488,7 @@ function renderPane() {
   on('alNext', () => { alM++; if (alM > 12) { alM = 1; alY++; } renderPane(); });
   if (ORACLE_WIRE[tab]) ORACLE_WIRE[tab](pane);
   wireTips(pane);
+  pane.querySelectorAll('[data-goto]').forEach(b => b.onclick = () => { tab = b.dataset.goto; renderTabs(); renderPane(); });
   if (tab === 'xuankong') showCell(curCell);
   pane.querySelectorAll('[data-pm]').forEach(s => s.onchange = () => { palmAns[s.dataset.pm] = +s.value; renderPane(); });
 }

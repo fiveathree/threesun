@@ -81,16 +81,16 @@ let ans16 = loadJSON('wx-16', Array(12).fill(null));
 function paneMbti() {
   const k = isEn() ? 4 : 1, left = ans16.filter(a => a == null).length;
   const qs = Q16.map((q, i) => `<div class="q-row"><span>${i + 1}. ${q[k]}</span><div class="filters">${[0, 1].map(o => `<button type="button" class="chip" data-q16="${i}:${o}" aria-pressed="${ans16[i] === o}">${q[k + 1 + o]}</button>`).join('')}</div></div>`).join('');
-  let res = `<p class="sub" style="margin:0">${t('q16Todo')(left)}${infoTip(t('whatIs'), t('q16Info'))}</p>`, recs = recsOfEl(pickEl, 3);
+  let res = `<p class="sub" style="margin:0">${t('q16Todo')(left)}${infoTip(t('whatIs'), t('q16Info'))}</p>`, rEl = pickEl;
   if (!left) {
     const code = ['EI', 'SN', 'TF', 'JP'].map((ax, a) => { const n = ans16.slice(a * 3, a * 3 + 3).filter(x => x === 0).length; return n >= 2 ? ax[0] : ax[1]; }).join('');
     const D = TYPE16[code], el = code[1] === 'S' ? (code[3] === 'J' ? '土' : '火') : (code[2] === 'F' ? '木' : '金');
     res = block(el, `<p class="lead">${t('q16Lead')(`${code} ${isEn() ? D[2] : D[0]}`)}${infoTip(t('whatIs'), t('q16Info'))}</p><p style="margin:0">${isEn() ? D[3] : D[1]}</p>
       <div class="facts">${[...code].map(c => fact(c, t('q16Axis')[c])).join('')}</div>
       <p style="margin:0"><button type="button" class="chip" id="q16Reset">${t('q16Reset')}</button></p>`);
-    recs = [...recsOfEl(el, 2), ...recsOfEl(pickEl, 1)];
+    rEl = el;
   }
-  return res + `<div class="q-list">${qs}</div>` + recList(recs);
+  return res + `<div class="q-list">${qs}</div>` + crystalsFor(rEl);
 }
 
 /* ---------- 九型人格 ---------- */
@@ -112,15 +112,15 @@ function paneEnnea() {
   const order = st.map((x, i) => st[(i * 7) % 18]);    // mix types so they don't sit in blocks
   const list = order.map(([n, j]) => { const id = `${n}-${j}`; return `<div class="q-row"><span>${ENNEA[n][k][j]}</span><button type="button" class="chip" data-en="${id}" aria-pressed="${enPick.includes(id)}">${t('enLike')}</button></div>`; }).join('');
   const sc = n => enPick.filter(id => id.startsWith(n + '-')).length;
-  let res = `<p class="sub" style="margin:0">${t('enTodo')}${infoTip(t('whatIs'), t('enInfo'))}</p>`, recs = recsOfEl(pickEl, 3);
+  let res = `<p class="sub" style="margin:0">${t('enTodo')}${infoTip(t('whatIs'), t('enInfo'))}</p>`, rEl = pickEl;
   if (enPick.length) {
     let best = 1; for (let n = 2; n <= 9; n++) if (sc(n) > sc(best)) best = n;
     const a = best === 1 ? 9 : best - 1, b = best === 9 ? 1 : best + 1, wing = sc(b) > sc(a) ? b : a, E = ENNEA[best][k];
     res = block(ENNEA[best].el, `<p class="lead">${t('enLead')(best, E[0])}${infoTip(t('whatIs'), t('enInfo'))}</p><p style="margin:0">${E[3]}</p>
       <div class="facts">${fact(t('enFacts').wing, `${best}w${wing} · ${ENNEA[wing][k][0]}`)}${fact(t('enFacts').fear, E[4])}${fact(t('enFacts').grow, E[5])}</div>`);
-    recs = [...recsOfEl(ENNEA[best].el, 2), ...recsOfEl(pickEl, 1)];
+    rEl = ENNEA[best].el;
   }
-  return res + `<div class="q-list">${list}</div>` + recList(recs);
+  return res + `<div class="q-list">${list}</div>` + crystalsFor(rEl);
 }
 
 /* ---------- 能量類型（人類圖概念，簡化） ---------- */
@@ -166,7 +166,7 @@ function paneHd() {
   const svg = `<svg class="hd-svg" viewBox="0 0 200 292" role="img" aria-label="${[...defd].map(c => t('hdCenters')[c]).join(', ')}"><g class="hd-lines">${lines}</g>${nodes}</svg>`;
   return (hasTime ? '' : `<p class="note">${t('hdNoTime')}</p>`) +
     block(H.el, `<p class="lead">${t('hdLead')(profile.name, Hx[0])}${infoTip(t('whatIs'), t('hdInfo'))}</p><p style="margin:0">${Hx[2]}</p>
-    <div class="lr-wrap">${svg}<div class="facts" style="flex:1;min-width:200px">${fact(t('hdFacts').strategy, Hx[1])}${fact(t('hdFacts').authority, HD_AUTH[auth][k])}${fact(t('hdFacts').profile, `${pers[0][1]}/${des[0][1]}`)}${fact(t('hdFacts').def, t('hdDef')[Math.min(parts, 4)])}</div></div>`) + recList([...recsOfEl(H.el, 2), ...recsOfEl(pickEl, 1)]);
+    <div class="lr-wrap">${svg}<div class="facts" style="flex:1;min-width:200px">${fact(t('hdFacts').strategy, Hx[1])}${fact(t('hdFacts').authority, HD_AUTH[auth][k])}${fact(t('hdFacts').profile, `${pers[0][1]}/${des[0][1]}`)}${fact(t('hdFacts').def, t('hdDef')[Math.min(parts, 4)])}</div></div>`) + crystalsFor(H.el);
 }
 
 Object.assign(ORACLE_PANES, { mbti: paneMbti, ennea: paneEnnea, hd: paneHd });

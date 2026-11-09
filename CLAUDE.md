@@ -53,7 +53,7 @@ tests/smoke.js        無頭測試
 
 - **語言**：`T.zh` / `T.en`，用 `t('key')` 攞。有啲係函數（例如 `t('verdict')(...)`）。加新文字要中英兩邊都加。`#en` hash 打開英文版；揀過嘅語言存 `localStorage`（`wx-lang`）。
 - **分頁**：`GROUPS`（app.js）定義七大類同細項：
-  - 命理 `bazi ziwei life name nine stone`
+  - 命理 `bazi overview ziwei life name nine stone`
   - 星象 `astro sx xiu qizheng vedic maya`
   - 性格・配對 `blood mbti ennea hd match`
   - 占卜 `tarot rune iching meihua yarrow turtle qian petal`
@@ -62,7 +62,8 @@ tests/smoke.js        無頭測試
   - 相學 `palm`
 - **加新分頁**：寫 `paneXxx()` 回傳 HTML string → 加入 `renderPane()` 嘅 `P` map（或者 `oracles.js` 嘅 `ORACLE_PANES`）→ 要綁事件就加 `ORACLE_WIRE[key] = pane => {...}` → `T.zh.tabs` / `T.en.tabs` 加名 → 加入 `GROUPS`。
 - 每次 render 都係成個 pane `innerHTML` 重寫，事件喺 `renderPane()` 尾重新綁。動畫做法：喺現有 DOM 做完動畫，再更新 state 同 `renderPane()` 出靜態結果。
-- **配水晶**：`recList([產品id...])`；`recsOfEl(五行, n)` 攞某五行嘅貨。每個結果都應該以 `recList` 收尾。
+- **配水晶（統一規則，唔好再自己揀貨）**：每個結果先決定一個「結果五行」（同 `block(el, …)` 嘅顏色一樣），然後以 `crystalsFor(el)` 收尾：結果五行嘅手鏈 + 補八字最弱五行（`pickEl`；如果一樣就用生佢嘅五行）嘅手鏈 + 結果五行嘅擺件，固定 3 件，上面有一句原因（`recWhy`）。結果本身係某件貨（誕生石、塔羅「現在」牌、符文）就用 `crystalsFor(el, 產品id)` 頂替第一件。唔好直接 call `recList`，smoke test 會報錯。
+- **五行總覽**（`overview`，命理第二個分頁）：逐個用出生資料計嘅學說（`OV_KEYS`）render 一次，讀 `crystalsFor` 留低嘅 `lastEl`，數邊個五行最多。抽牌、占卜、未答嘅問卷、姓名學（預設係示範名）同手相（預設答案）唔計。加新學說要諗清楚應唔應該加入 `OV_KEYS`。
 - **五行顏色**：外層加 class `el-木` 等，入面用 `var(--c)` / `var(--cb)`。`block(el, html)` 會包好。
 - `pickEl` = 八字最弱五行，好多地方用嚟推介。
 
@@ -76,7 +77,7 @@ tests/smoke.js        無頭測試
 - **八宅本命卦**：按立春年同性別；公式喺 `kuaOf()`，已用 1986 男 = 坤 2、女 = 坎 1、2000 男 = 離 9、女 = 乾 6 核對。九宮擺位亦顯示本命卦吉凶。
 - **農民曆**：lunar-javascript 嘅宜忌（簡體）經 `toTrad()` 轉繁體；英文翻譯喺 `YIJI_EN`，冇翻譯就顯示中文。
 - **九星氣學**（`nine`）：本命星 = 立春年，`mod(1 - (年 - 2026) - 1, 9) + 1`（2026 一白、1986 五黃）；月命星按月支同本命星組別（1/4/7 寅月起八白、3/6/9 起五黃、2/5/8 起二黑）逆行。已同 lunar.js `getYearNineStar()` / `getMonthNineStar()` 核對。2026 運勢按本命星今年飛到邊宮（`CELLS[].fs`），**每年立春要同飛星一齊更新**。
-- **二十八宿**（`xiu`）：lunar.js `getXiu()` 等（簡體，經 `toTrad()`），即值日星宿，唔係日本宿曜 27 宿。
+- **二十八宿**（`xiu`）：lunar.js `getXiu()` 等（簡體，經 `toTrad()`），即值日星宿，唔係日本宿曜 27 宿。`toTrad()` 嘅 `S2T` 表要有齊「张轸虚娄毕参乌」，之前漏咗會令 6 個星宿嘅生日出錯。
 - **瑪雅曆**（`maya`）：13 月亮曆（Dreamspell）計法，2 月 29 日唔計；基準 2013-07-26 = Kin 164，已核對 2012-12-21 = Kin 207。
 - **小六壬**（`xlr`）：大安起農曆月，再起日、時（子 = 1）。1986-03-15 巳時（農曆二月初六）= 空亡。
 - **配對合盤**（`match`）：星座元素、生肖（六合三合相沖相害）、日主五行生剋三項平均。
@@ -106,7 +107,7 @@ tests/smoke.js        無頭測試
 node tests/smoke.js
 ```
 
-用假 DOM 喺 Node 跑晒每個分頁（中英兩邊），再試冇出生時間嘅情況。佢**唔會**測動畫同 canvas（龜甲），呢啲要喺真瀏覽器睇。改完任何 JS 都要跑一次。
+用假 DOM 喺 Node 跑晒每個分頁（中英兩邊），再試冇出生時間嘅情況，再用 400 個連續日子 × 12 個時辰跑晒所有跟日期計嘅分頁（約 1 分鐘），同埋檢查每個分頁都用統一配水晶規則。佢**唔會**測動畫同 canvas（龜甲），呢啲要喺真瀏覽器睇。改完任何 JS 都要跑一次。
 
 ## 未做 / 下一步
 

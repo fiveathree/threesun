@@ -60,7 +60,7 @@ function valuesResult(vals) {
   const main = vals.map(v => (v === 7 || v === 9) ? 1 : 0), moving = vals.map(v => v === 6 || v === 9);
   const chg = main.map((b, i) => moving[i] ? 1 - b : b), H = ohex(main), H2 = ohex(chg), nMove = moving.filter(Boolean).length;
   return block(H.up.el, `<div class="hex-pair">${hexCard(H, main, moving, t('mhMain'))}${nMove ? hexCard(H2, chg, [], t('icChange'), true) : ''}</div>
-    <p class="note">${nMove ? t('icMoving')(nMove) : t('icNoChange')}</p>`) + recList([...recsOfEl(H.up.el, 2), ...recsOfEl(H.lo.el, 1)]);
+    <p class="note">${nMove ? t('icMoving')(nMove) : t('icNoChange')}</p>`) + crystalsFor(H.up.el);
 }
 function valueList(vals) {
   return `<ol class="vlist">${vals.map((v, i) => `<li><span>${i + 1}</span>${linesHtml([v === 7 || v === 9 ? 1 : 0], [v === 6 || v === 9])}<em>${t('coinLabel')[v]}</em></li>`).reverse().join('')}</ol>`;
@@ -72,7 +72,7 @@ function newCoins() { const faces = Array.from({ length: 6 }, () => [0, 0, 0].ma
 const coinHtml = v => `<div class="coin ${v === 3 ? 'tail' : 'head'}"><span>${v === 3 ? t('coinTail') : t('coinHead')}</span></div>`;
 function paneCoins() {
   if (!coinS) coinS = newCoins();
-  return `<div class="row"><button class="btn" type="button" id="coinGo">${t('icToss')}</button></div><p class="note">${t('icHint')}</p>
+  return `<div class="row"><button class="btn" type="button" id="coinGo">${t('icToss')}</button>${infoTip(t('whatIs'), t('icHint'))}</div>
     <div class="coin-stage"><div class="coins" id="coins">${coinS.faces[5].map(coinHtml).join('')}</div><div id="coinMsg" class="sub"></div></div>
     <div class="vwrap" id="vwrap">${valueList(coinS.vals)}</div>` + valuesResult(coinS.vals);
 }
@@ -112,11 +112,11 @@ function paneMeihua() {
   const rel = ti.el === yong.el ? 'bi' : GEN[yong.el] === ti.el ? 'shengti' : CTRL[ti.el] === yong.el ? 'tike' : GEN[ti.el] === yong.el ? 'tisheng' : 'keti';
   const when = isEn() ? mhAt.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : `${mhAt.getMonth() + 1}月${mhAt.getDate()}日 ${pad(mhAt.getHours())}:${pad(mhAt.getMinutes())}`;
   const nm = t('elName');
-  return `<div class="row"><button class="btn" type="button" id="mhGo">${t('mhGo')}</button><span class="sub">${when}・${r.lu.getYearInGanZhi()}${isEn() ? ' ' : '年'}${BR[r.h - 1]}${isEn() ? ' hour' : '時'}</span></div>
-    <p class="note">${t('mhHint')}</p><p class="note mono">${t('mhCalc')(r.y, r.m, r.d, r.h, r.up, r.lo, r.mv)}</p>` +
+  return `<div class="row"><button class="btn" type="button" id="mhGo">${t('mhGo')}</button>${infoTip(t('whatIs'), t('mhHint'))}<span class="sub">${when}・${r.lu.getYearInGanZhi()}${isEn() ? ' ' : '年'}${BR[r.h - 1]}${isEn() ? ' hour' : '時'}</span></div>
+    <p class="note mono">${t('mhCalc')(r.y, r.m, r.d, r.h, r.up, r.lo, r.mv)}</p>` +
     block(ti.el, `<div class="hex-pair three reveal">${hexCard(H, r.bits, moving, t('mhMain'))}${hexCard(hu, [r.bits[1], r.bits[2], r.bits[3], r.bits[2], r.bits[3], r.bits[4]], [], t('mhHu'), true)}${hexCard(B, chg, [], t('mhBian'), true)}</div>
     <div class="facts">${fact(t('mhTi'), `${triLabel(ti)}・${nm(ti.el)}`)}${fact(t('mhYong'), `${triLabel(yong)}・${nm(yong.el)}`)}</div>
-    <p style="margin:0"><strong>${t('mhRel')[rel]}</strong></p>`) + recList([...recsOfEl(ti.el, 2), ...recsOfEl(Object.keys(GEN).find(k => GEN[k] === ti.el), 1)]);
+    <p style="margin:0"><strong>${t('mhRel')[rel]}</strong></p>`) + crystalsFor(ti.el);
 }
 
 /* ---------- 蓍草占 ---------- */
@@ -137,7 +137,7 @@ function castYarrow() {
 function pileHtml(n, label) { return `<div class="pile"><div class="stalks">${'<i></i>'.repeat(n)}</div><small>${label} ${n}</small></div>`; }
 function paneYarrow() {
   if (!yarrowS) yarrowS = castYarrow();
-  return `<div class="row"><button class="btn" type="button" id="yaGo">${t('yaGo')}</button></div><p class="note">${t('yaHint')}</p>
+  return `<div class="row"><button class="btn" type="button" id="yaGo">${t('yaGo')}</button>${infoTip(t('whatIs'), t('yaHint'))}</div>
     <div class="ya-stage" id="yaStage" hidden><div class="piles" id="yaPiles"></div><p class="sub mono" id="yaMsg"></p><button class="chip" type="button" id="yaSkip">${t('yaSkip')}</button></div>
     <div class="vwrap" id="yaLines">${valueList(yarrowS.vals)}</div>` + valuesResult(yarrowS.vals);
 }
@@ -189,11 +189,9 @@ function drawShell(cv, s, progress) {
 function paneTurtle() {
   if (!turtleS) turtleS = newTurtle();
   const r = t('tuRes')[turtleS.res], el = { ji: '木', zhong: '土', xiong: '火' }[turtleS.res];
-  return `<form class="tq" id="tuForm"><label for="tuQ">${t('tuQ')}<input id="tuQ" value="${esc(turtleQ)}" placeholder="${t('tuQPh')}"></label><button class="btn" type="submit">${t('tuGo')}</button></form>
-    <p class="note">${t('tuHint')}</p>
+  return `<form class="tq" id="tuForm"><label for="tuQ">${t('tuQ')}<input id="tuQ" value="${esc(turtleQ)}" placeholder="${t('tuQPh')}"></label><button class="btn" type="submit">${t('tuGo')}</button>${infoTip(t('whatIs'), t('tuHint'))}</form>
     <div class="shell-wrap"><canvas id="shell" width="360" height="270" aria-label="${r[0]}"></canvas></div>
-    <div id="tuOut">` + block(el, `${turtleQ ? `<p class="sub" style="margin:0">${t('tSum')(esc(turtleQ))}</p>` : ''}<p class="lead">${r[0]}<span class="sub" style="display:block;font-size:15px;font-family:var(--body)">${r[1]}</span></p><p class="note">${t('tuNote')}</p>`) +
-    recList({ ji: ['D03','B07'], zhong: ['B08','D02'], xiong: ['B09','D05'] }[turtleS.res]) + '</div>';
+    <div id="tuOut">` + block(el, `${turtleQ ? `<p class="sub" style="margin:0">${t('tSum')(esc(turtleQ))}</p>` : ''}<p class="lead">${r[0]}<span class="sub" style="display:block;font-size:15px;font-family:var(--body)">${r[1]}${infoTip(t('whatIs'), t('tuNote'))}</p>`) + crystalsFor(el) + '</div>';
 }
 async function animateTurtle(pane) {
   turtleQ = pane.querySelector('#tuQ').value.trim();
@@ -222,7 +220,7 @@ function tubeHtml(n) {
 function paneQianA() {
   if (!qianS) qianS = newQian();
   const q = QIAN[qianS.n], k = isEn();
-  const head = `<div class="row"><button class="btn${qianS.stage === 'drawn' ? ' ghost' : ''}" type="button" id="qDraw">${t('qDraw')}</button>${qianS.stage === 'drawn' ? `<button class="btn" type="button" id="qThrow">${t('qThrow')}</button>` : ''}</div><p class="note">${t('qHint')}</p>
+  const head = `<div class="row"><button class="btn${qianS.stage === 'drawn' ? ' ghost' : ''}" type="button" id="qDraw">${t('qDraw')}</button>${qianS.stage === 'drawn' ? `<button class="btn" type="button" id="qThrow">${t('qThrow')}</button>` : ''}${infoTip(t('whatIs'), t('qHint'))}</div>
     <div class="qian-stage">${tubeHtml(qianS.n + 1)}<div class="jiaos" id="jiaos">${qianS.faces ? qianS.faces.map(jiaoHtml).join('') : ''}</div></div>`;
   if (qianS.stage !== 'ok') {
     const msg = qianS.stage === 'drawn' ? t('qWait') : t('qCup')[qianS.cup];
@@ -232,8 +230,7 @@ function paneQianA() {
   return head + block(el, `<p class="sub" style="margin:0">${t('qCup').sheng}</p>
     <div class="qian"><div class="qian-head"><b>${t('qNo')(qianS.n + 1)}</b><em>${k ? QIAN_GRADE_EN[q[0]] : q[0]}</em></div>
       <p class="qian-verse">${q[1].replace('，', '，<br>')}</p>${k ? `<p class="sub" style="margin:0">${q[2]}</p>` : ''}
-      <p style="margin:0"><strong>${t('qAdvice')}${k ? ': ' : '：'}</strong>${k ? q[4] : q[3]}</p></div>
-    <p class="note">${t('qNote')}</p>`) + recList(QIAN_REC[q[0]]);
+      <p style="margin:0"><strong>${t('qAdvice')}${k ? ': ' : '：'}</strong>${k ? q[4] : q[3]}${infoTip(t('whatIs'), t('qNote'))}</p></div>`) + crystalsFor(el);
 }
 async function animateShake(pane) {
   if (qianBusy) return; qianBusy = true;
@@ -272,12 +269,10 @@ function panePetal() {
   const words = t('peWords')[petalS.mode], done = petalS.plucked === petalS.n;
   const last = petalS.plucked ? words[(petalS.plucked - 1) % 2] : '';
   const yes = done && (petalS.plucked - 1) % 2 === 0;
-  const recs = petalS.mode === 'love' ? (yes ? ['B04','B03'] : ['B04','B08']) : (yes ? ['B07','B01'] : ['B09','B08']);
-  return `<div class="tq"><label for="peMode">${t('peQ')}<select id="peMode">${Object.keys(t('peMode')).map(k => `<option value="${k}"${k === petalS.mode ? ' selected' : ''}>${t('peMode')[k]}</option>`).join('')}</select></label><button class="btn ghost" type="button" id="peNew">${t('peNew')}</button></div>
-    <p class="note">${t('peHint')}</p>
+  return `<div class="tq"><label for="peMode">${t('peQ')}<select id="peMode">${Object.keys(t('peMode')).map(k => `<option value="${k}"${k === petalS.mode ? ' selected' : ''}>${t('peMode')[k]}</option>`).join('')}</select></label><button class="btn ghost" type="button" id="peNew">${t('peNew')}</button>${infoTip(t('whatIs'), t('peHint'))}</div>
     <div class="petal-stage"><div class="flower-wrap" id="flower">${flowerSvg(petalS)}</div>
       <div class="petal-word"><b id="peWord">${done ? t('peFinal') + ' ' + last : (last || '…')}</b><small>${t('peLeft')(petalS.n - petalS.plucked)}</small></div></div>` +
-    (done ? block(yes ? '木' : '水', `<p class="lead"><span class="big">${last}</span></p>`) + recList(recs) : '');
+    (done ? block(yes ? '木' : '水', `<p class="lead"><span class="big">${last}</span></p>`) + crystalsFor(yes ? '木' : '水') : '');
 }
 function pluck(pane, el) {
   if (el.classList.contains('fall')) return;

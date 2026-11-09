@@ -80,6 +80,11 @@ const T4 = {
     bdAll: '48 型一覽（撳任何一格睇）',
     bdMine: '返去我嘅類型',
     bdInfoLabel: '48型人格係咩',
+    recWhy: (el, own, same) => `呢個結果對應「${el}」行，所以配${el}行手鏈同擺件；再加一條${own}行手鏈${same ? `（你八字最弱都係${same}行，所以揀生佢嘅${own}行）` : '，補你八字最弱嘅五行'}。`,
+    ovLead: e => `你嘅主要五行<span class="big">${e}</span>`,
+    ovSum: (n, k, e) => `${n} 種學說之中，有 ${k} 種指向「${e}」行，所以以${e}行水晶為主。撳下面任何一項可以睇返嗰個學說。`,
+    ovInfo: '每種學說計法同角度都唔同，所以講法唔一致係正常。呢度將每種用你出生資料計嘅學說，都換算成一個五行，再數邊個五行出現得最多，作為你嘅主要五行。每個分頁嘅水晶都用同一條規則：結果五行嘅手鏈同擺件，再加一條補你八字最弱五行嘅手鏈。抽牌、擲杯同問卷未答嘅唔計。',
+    ovNone: '未有足夠資料。',
     bdInfo: '48型人格 = 12 星座 × 4 血型（A、B、O、AB）。星座按你填嘅出生日期計，血型喺上面揀。血型性格係日本流行嘅說法，冇科學根據；呢度嘅類型名同解說係本站原創，只作娛樂參考。'
   },
   en: {
@@ -91,6 +96,11 @@ const T4 = {
     bdAll: 'All 48 types (tap any square)',
     bdMine: 'Back to my type',
     bdInfoLabel: 'What are the 48 types?',
+    recWhy: (el, own, same) => `This reading points to ${el}, so you get a ${el} bracelet and ornament, plus a ${own} bracelet${same ? ` (your Bazi is also weakest in ${same}, so ${own}, which feeds it)` : ' for your weakest Bazi element'}.`,
+    ovLead: e => `Your main element<span class="big">${e}</span>`,
+    ovSum: (n, k, e) => `Of ${n} systems, ${k} point to ${e}, so ${e} crystals come first. Tap any item below to open that reading.`,
+    ovInfo: 'Each system works from a different angle, so their readings naturally differ. Here every system that uses your birth details is turned into one element, and the element that comes up most is your main element. Every tab picks crystals the same way: a bracelet and ornament for the reading’s element, plus a bracelet for your weakest Bazi element. Card draws, oracles and unanswered questionnaires are left out.',
+    ovNone: 'Not enough information yet.',
     bdInfo: '48 types = 12 star signs × 4 blood types (A, B, O, AB). Your star sign comes from the birth date you entered; pick your blood type above. Blood-type personality is a popular Japanese idea with no scientific basis. The type names and texts here are written for this site and are for fun only.'
   }
 };
@@ -115,7 +125,7 @@ function paneBlood() {
     <p style="margin:0">${d[k + 1]}</p>
     <div class="facts">${fact(t('bdFacts').sign, z.kw[isEn() ? 1 : 0])}${fact(t('bdFacts').blood, BLOOD_INFO[b][lang])}${fact(t('bdFacts').type, `#${bdNum(zi, bi)} / 48`)}</div>
     ${isMine ? '' : `<p style="margin:0"><button type="button" class="chip" id="bdBack">${t('bdMine')}</button></p>`}`) +
-    `<h4 class="bd-h">${t('bdAll')}</h4>${grid}` + recList([...z.rec, BLOOD_INFO[b].rec]);
+    `<h4 class="bd-h">${t('bdAll')}</h4>${grid}` + crystalsFor(bdEl(z));
 }
 ORACLE_PANES.blood = paneBlood;
 ORACLE_WIRE.blood = pane => {

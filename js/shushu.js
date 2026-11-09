@@ -121,7 +121,7 @@ function paneQimen() {
     block(el, `<p class="lead">${t('qmLead')(`${jqName} · ${t('qmYuan')[Q.yuan]} · ${BR[Q.hz]}${isEn() ? '' : '時'}`, `${t('qmDun')[+Q.yin]}${isEn() ? ' ' : ''}${t('qmJu')(Q.ju)}`)}${infoTip(t('whatIs'), t('qmInfo'))}</p>
     <div class="facts">${fact(t('qmFacts').zhifu, QM_STAR[Q.zhifu][k])}${fact(t('qmFacts').zhishi, `${QM_DOOR[Q.zhishi][k]}${isEn() ? '' : '門'}`)}${fact(t('qmFacts').good, good || '—')}</div>
     <div class="qm-grid">${cells}</div>
-    <p style="margin:0"><strong>${t('qmDoor')}：</strong>${QM_DOOR_TXT[Q.zhishi][k]}</p>`) + recList(recsOfEl(el, 3));
+    <p style="margin:0"><strong>${t('qmDoor')}：</strong>${QM_DOOR_TXT[Q.zhishi][k]}</p>`) + crystalsFor(el);
 }
 
 /* ---------- 大六壬（簡化） ---------- */
@@ -183,7 +183,7 @@ function paneLiuren() {
     <div class="facts">${fact(t('lrFacts').jiang, `${BR[R.jiang]} ${isEn() ? LR_JIANG_EN[R.jiang] : LR_JIANG[R.jiang]}`)}${fact(t('lrFacts').hour, `${ST[l.getDayGanIndex()]}${BR[R.b]}${isEn() ? ' day · ' : '日 '}${BR[R.h]}${isEn() ? ' hour' : '時'}`)}${fact(t('lrFacts').method, t('lrM')[R.method])}</div>
     <div class="lr-wrap"><div><h4 class="mini">${t('lrPlate')}</h4><div class="lr-plate">${plate}</div></div>
     <div style="flex:1;min-width:0"><h4 class="mini">${t('lrKe')}</h4><div class="lr-kes">${keHtml}</div>
-    <h4 class="mini" style="margin-top:12px">${t('lrChuan')}</h4><div class="ast-table">${ch}</div></div></div>`) + recList([...recsOfEl(BR_EL[R.chuan[0]], 2), ...recsOfEl(pickEl, 1)]);
+    <h4 class="mini" style="margin-top:12px">${t('lrChuan')}</h4><div class="ast-table">${ch}</div></div></div>`) + crystalsFor(BR_EL[R.chuan[0]]);
 }
 
 /* ---------- 七政四餘 ---------- */
@@ -219,12 +219,12 @@ function paneQizheng() {
     return `<div class="ast-row"><span>${t('qz')[b]}</span><b>${G[0]}${isEn() ? '' : '宮'} ${isEn() ? '' : G[1]}</b><em>${xn}${deg}°</em></div>`;
   }).join('');
   const head = `<div class="ast-row qz-head"><span>${t('qzCols')[0]}</span><b>${t('qzCols')[1]}</b><em>${t('qzCols')[2]}</em></div>`;
-  if (S.asc == null) return block(pickEl, `<p class="lead">${t('qzLeadNo')}${infoTip(t('whatIs'), t('qzInfo'))}</p><div class="ast-table">${head}${rows}</div>`) + recList(recsOfEl(pickEl, 3));
+  if (S.asc == null) return block(pickEl, `<p class="lead">${t('qzLeadNo')}${infoTip(t('whatIs'), t('qzInfo'))}</p><div class="ast-table">${head}${rows}</div>`) + crystalsFor(pickEl);
   const mg = g(S.asc), lord = GONG_LORD[mg[0]], lg = g(S.lon[lord]), [lx] = xiuAt(S.lon[lord], S.year), el = BODY_EL[lord];
   return block(el, `<p class="lead">${t('qzLead')(profile.name, `${mg[0]}${isEn() ? '' : '宮'} ${mg[1]}`)}${infoTip(t('whatIs'), t('qzInfo'))}</p>
     <div class="facts">${fact(t('qzFacts').lord, t('qz')[lord])}${fact(t('qzFacts').at, `${lg[0]}${isEn() ? '' : '宮'} · ${lx}`)}</div>
     <p style="margin:0">${isEn() ? T6.en.qzLord[lord] : T6.zh.qzLord[lord]}</p>
-    <div class="ast-table">${head}${rows}</div>`) + recList([...recsOfEl(el, 2), ...recsOfEl(pickEl, 1)]);
+    <div class="ast-table">${head}${rows}</div>`) + crystalsFor(el);
 }
 
 /* ---------- 印度占星 ---------- */
@@ -267,7 +267,7 @@ function paneVedic() {
   const nm = z => `${z.sym} ${isEn() ? z.en : z.zh}`, lord = DASHA[ni % 9], el = lord[2];
   return block(el, `<p class="lead">${t('vdLead')(profile.name, isEn() ? N[0] : `${N[0]}（${N[1]}宿）`)}${infoTip(t('whatIs'), t('vdInfo'))}</p>
     <p style="margin:0">${isEn() ? N[3] : N[2]}</p>
-    <div class="facts">${fact(t('vdFacts').pada, `${pada} / 4 · ${t('vdLords')[lord[0]]}`)}${fact(t('vdFacts').moon, nm(signAt(mn)))}${fact(t('vdFacts').sun, nm(signAt(sid(S.lon.日))))}${S.asc != null ? fact(t('vdFacts').lagna, nm(signAt(sid(S.asc)))) : ''}${fact(t('vdFacts').dasha, t('vdDasha')(t('vdLords')[DASHA[di][0]], new Date(end).getFullYear()))}</div>`) + recList([...recsOfEl(el, 2), ...recsOfEl(DASHA[di][2], 1)]);
+    <div class="facts">${fact(t('vdFacts').pada, `${pada} / 4 · ${t('vdLords')[lord[0]]}`)}${fact(t('vdFacts').moon, nm(signAt(mn)))}${fact(t('vdFacts').sun, nm(signAt(sid(S.lon.日))))}${S.asc != null ? fact(t('vdFacts').lagna, nm(signAt(sid(S.asc)))) : ''}${fact(t('vdFacts').dasha, t('vdDasha')(t('vdLords')[DASHA[di][0]], new Date(end).getFullYear()))}</div>`) + crystalsFor(el);
 }
 
 Object.assign(ORACLE_PANES, { qimen: paneQimen, liuren: paneLiuren, qizheng: paneQizheng, vedic: paneVedic });

@@ -23,10 +23,28 @@ for (const L of ['zh', 'en']) {
     api.setTab(tb); api.renderPane();
     const h = els.pane.innerHTML, bad = !h || h.includes('class="warn"');
     if (bad) fails++;
+    if (h.includes('class="recs"') && !h.includes('recs-why')) { fails++; console.log('FAIL', L, tb, 'crystals not using the shared rule'); }
     console.log(bad ? 'FAIL' : ' ok ', L, tb.padEnd(8), '|', strip(h).slice(0, 110));
   }
 }
 api.setLang('zh'); api.setProfile({ ...api.getProfile(), hh: null, mm: null });
 for (const tb of ['ziwei', 'astro', 'bazi']) { api.setTab(tb); api.renderPane(); console.log(' ok  no-time', tb.padEnd(6), '|', strip(els.pane.innerHTML).slice(0, 80)); }
+// Date-driven readings across 400 consecutive days and 12 hours, in both languages (catches table gaps such as a missing mansion).
+const base = Date.UTC(1990, 0, 1), dated = ['bazi', 'overview', 'ziwei', 'life', 'nine', 'stone', 'astro', 'sx', 'xiu', 'qizheng', 'vedic', 'maya', 'blood', 'hd', 'match', 'qimen', 'liuren', 'xlr', 'kua', 'today'];
+let dfails = 0;
+for (let i = 0; i < 400; i++) {
+  const dt = new Date(base + i * 864e5), hh = (i * 2) % 24;
+  api.setProfile({ ...api.getProfile(), y: dt.getUTCFullYear(), m: dt.getUTCMonth() + 1, d: dt.getUTCDate(), hh, mm: 30, gender: i % 2 ? 'm' : 'f' });
+  for (const L of ['zh', 'en']) {
+    api.setLang(L);
+    for (const tb of dated) {
+      api.setTab(tb); api.renderPane();
+      const h = els.pane.innerHTML;
+      if (!h || h.includes('<p class="warn">') || /undefined|NaN/.test(strip(h))) { if (dfails++ < 10) console.log('FAIL', L, tb, dt.toISOString().slice(0, 10), hh, '|', strip(h).slice(0, 100)); }
+    }
+  }
+}
+console.log(dfails ? `FAIL ${dfails} dated reading(s)` : ' ok  400 dates × 12 hours × ' + dated.length + ' tabs × 2 languages');
+fails += dfails;
 console.log(fails ? `\n${fails} reading(s) failed` : '\nAll readings rendered.');
 process.exit(fails ? 1 : 0);
